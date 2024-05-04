@@ -12,6 +12,8 @@ import TableSpanning from 'src/views/tables/TableSpanning'
 import TableCustomized from 'src/views/tables/TableCustomized'
 import TableCollapsible from 'src/views/tables/TableCollapsible'
 import TableStickyHeader from 'src/views/tables/TableStickyHeader'
+import Pencil from 'mdi-material-ui/Pencil'
+import DeleteAlert from 'mdi-material-ui/DeleteAlert'
 
 const MUITable = () => {
   return (
@@ -30,30 +32,14 @@ const MUITable = () => {
           <TableBasic />
         </Card>
       </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title='Dense Table' titleTypographyProps={{ variant: 'h6' }} />
-          <TableDense />
-        </Card>
-      </Grid>
+
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Sticky Header' titleTypographyProps={{ variant: 'h6' }} />
           <TableStickyHeader />
         </Card>
       </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title='Collapsible Table' titleTypographyProps={{ variant: 'h6' }} />
-          <TableCollapsible />
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Card>
-          <CardHeader title='Spanning Table' titleTypographyProps={{ variant: 'h6' }} />
-          <TableSpanning />
-        </Card>
-      </Grid>
+
       <Grid item xs={12}>
         <Card>
           <CardHeader title='Customized Table' titleTypographyProps={{ variant: 'h6' }} />

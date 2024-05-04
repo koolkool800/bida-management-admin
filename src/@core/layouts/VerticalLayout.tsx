@@ -74,10 +74,8 @@ const VerticalLayout = (props: LayoutProps) => {
           {...props}
         />
         <MainContentWrapper className='layout-content-wrapper'>
-          {/* AppBar Component */}
           <AppBar toggleNavVisibility={toggleNavVisibility} {...props} />
 
-          {/* Content */}
           <ContentWrapper
             className='layout-page-content'
             sx={{
@@ -91,10 +89,6 @@ const VerticalLayout = (props: LayoutProps) => {
             {children}
           </ContentWrapper>
 
-          {/* Footer Component */}
-          <Footer {...props} />
-
-          {/* Portal for React Datepicker */}
           <DatePickerWrapper sx={{ zIndex: 11 }}>
             <Box id='react-datepicker-portal'></Box>
           </DatePickerWrapper>

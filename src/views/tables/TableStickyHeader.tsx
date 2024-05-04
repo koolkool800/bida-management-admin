@@ -94,7 +94,7 @@ const TableStickyHeader = () => {
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label='sticky table'>
+        <Table aria-label='sticky table'>
           <TableHead>
             <TableRow>
               {columns.map(column => (

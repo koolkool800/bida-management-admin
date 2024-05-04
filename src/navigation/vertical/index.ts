@@ -23,12 +23,7 @@ const navigation = (): VerticalNavItemsType => {
       path: '/'
     },
     {
-      title: 'Settings ref',
-      icon: CogOutline,
-      path: '/account-settings'
-    },
-    {
-      title: 'Settings real',
+      title: 'Settings',
       icon: CogOutline,
       path: '/settings'
     },
@@ -42,14 +37,7 @@ const navigation = (): VerticalNavItemsType => {
       icon: Billiards,
       path: '/table-management'
     },
-    {
-      sectionTitle: 'Settings'
-    },
-    {
-      title: 'Price',
-      icon: CogOutline,
-      path: '/settings'
-    },
+
     {
       sectionTitle: 'Pages'
     },
@@ -60,44 +48,9 @@ const navigation = (): VerticalNavItemsType => {
       openInNewTab: true
     },
     {
-      title: 'Register',
-      icon: AccountPlusOutline,
-      path: '/pages/register',
-      openInNewTab: true
-    },
-    {
-      title: 'Error',
-      icon: AlertCircleOutline,
-      path: '/pages/error',
-      openInNewTab: true
-    },
-    {
-      sectionTitle: 'User Interface'
-    },
-    {
-      title: 'Typography',
-      icon: FormatLetterCase,
-      path: '/typography'
-    },
-    {
-      title: 'Icons',
-      path: '/icons',
-      icon: GoogleCirclesExtended
-    },
-    {
       title: 'Cards',
       icon: CreditCardOutline,
       path: '/cards'
-    },
-    {
-      title: 'Tables',
-      icon: Table,
-      path: '/tables'
-    },
-    {
-      icon: CubeOutline,
-      title: 'Form Layouts',
-      path: '/form-layouts'
     }
   ]
 }
