@@ -14,6 +14,7 @@ import Pencil from 'mdi-material-ui/Pencil'
 import DeleteAlert from 'mdi-material-ui/DeleteAlert'
 import { Backdrop, Box, Button, Fade, Modal, Typography, styled } from '@mui/material'
 import { modalStyle } from 'src/configs/modal.config'
+import { Employee } from 'src/types/user'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 60,
@@ -67,37 +68,11 @@ function createData(code: string, avatar: string, name: string, email: string, a
   return { code, name, avatar, email, actions }
 }
 
-const rows: Data[] = [
-  createData(
-    '001',
-    'asdasd',
-    'Staff A',
-    'user@gmail.com',
-    <>
-      <Pencil /> <DeleteAlert />
-    </>
-  ),
-  createData(
-    '002',
-    'ss',
-    'Staff B',
-    'user@gmail.com',
-    <>
-      <Pencil /> <DeleteAlert />
-    </>
-  ),
-  createData(
-    '003',
-    's',
-    'Staff C',
-    'user@gmail.com',
-    <>
-      <Pencil /> <DeleteAlert />
-    </>
-  )
-]
+type Props = {
+  items: Employee[]
+}
 
-export const TableList = () => {
+export const TableList = ({ items }: Props) => {
   // ** States
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
@@ -138,6 +113,18 @@ export const TableList = () => {
     handleCloseEditModal()
   }
 
+  const rows: Data[] = items?.map(item => {
+    return createData(
+      item.id.toString(),
+      '/images/avatars/1.png',
+      item.name,
+      item.user_name,
+      <>
+        <Pencil /> <DeleteAlert />
+      </>
+    )
+  })
+
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 440 }}>
@@ -152,7 +139,7 @@ export const TableList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+            {rows?.map(row => {
               return (
                 <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                   {columns.map(column => {
@@ -243,7 +230,7 @@ export const TableList = () => {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component='div'
-        count={rows.length}
+        count={rows?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

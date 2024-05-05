@@ -19,7 +19,7 @@ import VerticalAppBarContent from './components/vertical/AppBarContent'
 
 // ** Hook Import
 import { useSettings } from 'src/@core/hooks/useSettings'
-
+import toast, { Toaster } from 'react-hot-toast'
 interface Props {
   children: ReactNode
 }
@@ -53,6 +53,7 @@ const UserLayout = ({ children }: Props) => {
       )}
     >
       {children}
+      <Toaster />
     </VerticalLayout>
   )
 }

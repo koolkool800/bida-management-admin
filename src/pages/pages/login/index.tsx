@@ -1,5 +1,5 @@
 // ** React Imports
-import { ChangeEvent, FormEvent, MouseEvent, ReactNode, useState } from 'react'
+import { ChangeEvent, FormEvent, MouseEvent, ReactNode, useEffect, useState } from 'react'
 
 // ** Next Imports
 import Link from 'next/link'
@@ -38,10 +38,20 @@ import BlankLayout from 'src/@core/layouts/BlankLayout'
 
 // ** Demo Imports
 import FooterIllustrationsV1 from 'src/views/pages/auth/FooterIllustration'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { authService } from 'src/services/auth'
+import { User } from 'src/types/user'
+import { authUtils } from 'src/utils/auth'
+import { getUserLocal } from 'src/utils/localStorage'
 
 interface State {
   password: string
   showPassword: boolean
+}
+
+type FormValues = {
+  user_name: string
+  password: string
 }
 
 // ** Styled Components
@@ -56,12 +66,27 @@ const LoginPage = () => {
     showPassword: false
   })
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors }
+  } = useForm<FormValues>()
+
   // ** Hook
   const theme = useTheme()
   const router = useRouter()
 
-  const handleChange = (prop: keyof State) => (event: ChangeEvent<HTMLInputElement>) => {
-    setValues({ ...values, [prop]: event.target.value })
+  const onSubmit = async (data: FormValues) => {
+    try {
+      const response = await authService.login<User>(data)
+      if (response?.message === 'Successfully') {
+        authUtils.handleLogin(response.data)
+      }
+      router.push('/')
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const handleClickShowPassword = () => {
@@ -72,10 +97,12 @@ const LoginPage = () => {
     event.preventDefault()
   }
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    router.push('/')
-  }
+  useEffect(() => {
+    const user = getUserLocal()
+    if (user) {
+      router.push('/')
+    }
+  }, [])
 
   return (
     <Box className='content-center'>
@@ -159,15 +186,21 @@ const LoginPage = () => {
               Welcome to {themeConfig.templateName}! 👋🏻
             </Typography>
           </Box>
-          <form noValidate autoComplete='off' onSubmit={onSubmit}>
-            <TextField autoFocus fullWidth id='email' label='Email' sx={{ marginBottom: 4 }} />
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              autoFocus
+              fullWidth
+              id='username'
+              label='Username'
+              sx={{ marginBottom: 4 }}
+              {...register('user_name', { required: true })}
+            />
             <FormControl fullWidth>
               <InputLabel htmlFor='auth-login-password'>Password</InputLabel>
               <OutlinedInput
                 label='Password'
-                value={values.password}
+                value={watch('password')}
                 id='auth-login-password'
-                onChange={handleChange('password')}
                 type={values.showPassword ? 'text' : 'password'}
                 endAdornment={
                   <InputAdornment position='end'>
@@ -181,18 +214,15 @@ const LoginPage = () => {
                     </IconButton>
                   </InputAdornment>
                 }
+                {...register('password', {
+                  required: true
+                })}
               />
             </FormControl>
             <Box
               sx={{ mb: 4, display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'space-between' }}
             ></Box>
-            <Button
-              fullWidth
-              size='large'
-              variant='contained'
-              sx={{ marginBottom: 7 }}
-              onClick={() => router.push('/')}
-            >
+            <Button fullWidth size='large' variant='contained' sx={{ marginBottom: 7 }} type='submit'>
               Login
             </Button>
 

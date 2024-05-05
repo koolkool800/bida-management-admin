@@ -24,6 +24,13 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import { MenuItem, Select, SelectChangeEvent, SxProps } from '@mui/material'
 import { Theme } from '@mui/system'
 import { Resolver, useForm } from 'react-hook-form'
+import useSWR, { KeyedMutator } from 'swr'
+import { API_URL } from 'src/constants/environment'
+import { fetcher } from 'src/libs/axios'
+import { SettingTable } from 'src/types/setting'
+import { formatCurrency } from 'src/utils/price'
+import { tableService } from 'src/services/table'
+import toast from 'react-hot-toast'
 
 type FormValues = {
   name: string
@@ -36,38 +43,48 @@ interface ISettingTable {
   price: number
 }
 
-const listSetting: ISettingTable[] = [
-  {
-    id: 1,
-    price: 100000,
-    type: 'VIP'
-  },
-  {
-    id: 2,
-    price: 50000,
-    type: 'NORMAL'
-  }
-]
-
-const CreateTable = ({ style }: { style?: SxProps<Theme> | undefined }) => {
+const CreateTable = ({
+  style,
+  mutate,
+  handleClose
+}: {
+  handleClose: () => void
+  mutate: KeyedMutator<any>
+  style?: SxProps<Theme> | undefined
+}) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
     watch
   } = useForm<FormValues>()
-  const [settingId, setSettingId] = useState('')
 
-  const onSubmit = handleSubmit(data => {
-    console.log('hihi')
-    console.log(data)
-  })
+  const { data: listSetting } = useSWR(`${API_URL}/setting-table`, fetcher)
+
+  const onSubmit = async (data: FormValues) => {
+    try {
+      const response = await tableService.create({
+        name: data.name,
+        setting_table_id: data.settingTableId
+      })
+
+      if (response?.message === 'Successfully') {
+        toast.success('Create table successfully', {
+          position: 'top-right'
+        })
+      }
+
+      mutate()
+    } catch (error) {}
+
+    handleClose()
+  }
 
   return (
     <Card sx={style}>
       <CardHeader title='Create Table' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={5}>
             <Grid item xs={12}>
               <TextField fullWidth label='Name' placeholder='Ban VIP' {...register('name', { required: true })} />
@@ -79,16 +96,16 @@ const CreateTable = ({ style }: { style?: SxProps<Theme> | undefined }) => {
                 <Select
                   labelId='demo-simple-select-helper-label'
                   id='demo-simple-select-helper'
-                  value={settingId}
+                  value={watch('settingTableId')}
                   label='Type'
                   {...register('settingTableId', {
                     required: true
                   })}
                 >
-                  {listSetting.map(setting => {
+                  {listSetting?.data?.data.map((setting: SettingTable) => {
                     return (
                       <MenuItem key={setting.id} value={setting.id}>
-                        {setting.type} - {setting.price} VND
+                        {setting.type} - {formatCurrency(setting.price)}
                       </MenuItem>
                     )
                   })}

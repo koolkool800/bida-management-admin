@@ -36,21 +36,6 @@ const navigation = (): VerticalNavItemsType => {
       title: 'Table management',
       icon: Billiards,
       path: '/table-management'
-    },
-
-    {
-      sectionTitle: 'Pages'
-    },
-    {
-      title: 'Login',
-      icon: Login,
-      path: '/pages/login',
-      openInNewTab: true
-    },
-    {
-      title: 'Cards',
-      icon: CreditCardOutline,
-      path: '/cards'
     }
   ]
 }

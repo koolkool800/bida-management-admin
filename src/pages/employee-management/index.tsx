@@ -5,11 +5,15 @@ import { useState } from 'react'
 import CreateEmployee from 'src/components/employee-management/Create'
 import { TableList } from 'src/components/employee-management/TableList'
 import { modalStyle } from 'src/configs/modal.config'
+import { API_URL } from 'src/constants/environment'
+import { fetcher } from 'src/libs/axios'
+import useSWR from 'swr'
 
 const EmployeeManagementPage = () => {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+  const { data: listEmployee, error, isLoading, mutate } = useSWR(`${API_URL}/employees`, fetcher)
 
   return (
     <Grid container spacing={6}>
@@ -22,7 +26,7 @@ const EmployeeManagementPage = () => {
 
       <Grid item xs={12}>
         <Card>
-          <TableList />
+          <TableList items={listEmployee?.data?.data} />
         </Card>
       </Grid>
 
@@ -32,7 +36,7 @@ const EmployeeManagementPage = () => {
         aria-labelledby='modal-modal-title'
         aria-describedby='modal-modal-description'
       >
-        <CreateEmployee style={modalStyle} />
+        <CreateEmployee style={modalStyle} handleClose={handleClose} mutate={mutate} />
       </Modal>
     </Grid>
   )

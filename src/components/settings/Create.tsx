@@ -24,13 +24,24 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import { MenuItem, Select, SelectChangeEvent, SxProps } from '@mui/material'
 import { Theme } from '@mui/system'
 import { Resolver, useForm } from 'react-hook-form'
+import { settingService } from 'src/services/setting'
+import toast from 'react-hot-toast'
+import { KeyedMutator } from 'swr'
 
 type FormValues = {
   price: number
   type: string
 }
 
-const CreateSetting = ({ style }: { style?: SxProps<Theme> | undefined }) => {
+const CreateSetting = ({
+  style,
+  mutate,
+  handleClose
+}: {
+  handleClose: () => void
+  mutate: KeyedMutator<any>
+  style?: SxProps<Theme> | undefined
+}) => {
   const {
     register,
     handleSubmit,
@@ -38,17 +49,29 @@ const CreateSetting = ({ style }: { style?: SxProps<Theme> | undefined }) => {
     watch
   } = useForm<FormValues>()
 
-  const onSubmit = handleSubmit(data => {
-    console.log('hihi')
-    console.log(data)
-  })
+  const onSubmit = async (data: FormValues) => {
+    try {
+      const response = await settingService.create({ price: Number(data.price), type: data.type })
+      if (response?.message === 'Successfully') {
+        toast.success('Create setting successfully', {
+          position: 'top-right'
+        })
+      }
+      mutate()
+    } catch (error) {}
+    handleClose()
+  }
 
   return (
     <Card sx={style}>
       <CardHeader title='Create new setting' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={5}>
+            <Grid item xs={12}>
+              <TextField fullWidth label='Type' placeholder='VIP' {...register('type', { required: true })} />
+            </Grid>
+
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -56,10 +79,6 @@ const CreateSetting = ({ style }: { style?: SxProps<Theme> | undefined }) => {
                 placeholder='1000'
                 {...register('price', { required: true })}
               />
-            </Grid>
-
-            <Grid item xs={12}>
-              <TextField fullWidth label='Type' placeholder='VIP' {...register('type', { required: true })} />
             </Grid>
 
             <Grid item xs={12}>

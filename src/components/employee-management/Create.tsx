@@ -24,6 +24,10 @@ import EyeOffOutline from 'mdi-material-ui/EyeOffOutline'
 import { SxProps } from '@mui/material'
 import { Theme } from '@mui/system'
 import { Resolver, useForm } from 'react-hook-form'
+import { axiosInstance } from 'src/libs/axios'
+import { employeeeService } from 'src/services/employee'
+import toast from 'react-hot-toast'
+import { KeyedMutator } from 'swr'
 
 interface State {
   password: string
@@ -32,11 +36,19 @@ interface State {
 
 type FormValues = {
   name: string
-  username: string
+  user_name: string
   password: string
 }
 
-const CreateEmployee = ({ style }: { style?: SxProps<Theme> | undefined }) => {
+const CreateEmployee = ({
+  style,
+  mutate,
+  handleClose
+}: {
+  handleClose: () => void
+  mutate: KeyedMutator<any>
+  style?: SxProps<Theme> | undefined
+}) => {
   // ** States
   const [values, setValues] = useState<State>({
     password: '',
@@ -58,13 +70,25 @@ const CreateEmployee = ({ style }: { style?: SxProps<Theme> | undefined }) => {
     event.preventDefault()
   }
 
-  const onSubmit = handleSubmit(data => console.log(data))
+  const onSubmit = async (data: FormValues) => {
+    try {
+      const response = await employeeeService.create(data)
+      if (response?.message === 'Successfully') {
+        toast.success('Create employee successfully', {
+          position: 'top-right'
+        })
+      }
+
+      mutate()
+    } catch (error) {}
+    handleClose()
+  }
 
   return (
     <Card sx={style}>
       <CardHeader title='Create employee' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={5}>
             <Grid item xs={12}>
               <TextField
@@ -81,7 +105,7 @@ const CreateEmployee = ({ style }: { style?: SxProps<Theme> | undefined }) => {
                 label='Username'
                 placeholder='carterleonard'
                 helperText='You can use letters, numbers & periods'
-                {...register('username', {
+                {...register('user_name', {
                   required: true
                 })}
               />

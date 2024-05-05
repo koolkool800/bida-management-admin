@@ -15,6 +15,9 @@ import AccountOutline from 'mdi-material-ui/AccountOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 import Lock from 'mdi-material-ui/Lock'
 import { OrderList } from 'src/components/table-management/OrderList'
+import useSWR from 'swr'
+import { API_URL } from 'src/constants/environment'
+import { fetcher } from 'src/libs/axios'
 
 const TabName = styled('span')(({ theme }) => ({
   lineHeight: 1.71,
@@ -25,12 +28,14 @@ const TabName = styled('span')(({ theme }) => ({
   }
 }))
 
-const TableManagementPage = ({ posts }: { posts: any }) => {
+const TableManagementPage = () => {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
 
   const [value, setValue] = useState('all')
+  const { data: listTable, mutate } = useSWR(`${API_URL}/tables`, fetcher)
+  const { data: listOrderTable, mutate: mutateOrder } = useSWR(`${API_URL}/orders`, fetcher)
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue)
@@ -73,10 +78,10 @@ const TableManagementPage = ({ posts }: { posts: any }) => {
           </TabList>
 
           <TabPanel sx={{ p: 0 }} value='all'>
-            <TableList />
+            <TableList items={listTable?.data?.data} mutate={mutate} mutateOrder={mutateOrder} />
           </TabPanel>
           <TabPanel sx={{ p: 0 }} value='booked'>
-            <OrderList />
+            <OrderList items={listOrderTable?.data?.data} mutate={mutateOrder} mutateList={mutate} />
           </TabPanel>
         </TabContext>
       </Card>
@@ -87,21 +92,10 @@ const TableManagementPage = ({ posts }: { posts: any }) => {
         aria-labelledby='modal-modal-title'
         aria-describedby='modal-modal-description'
       >
-        <CreateTable style={modalStyle} />
+        <CreateTable mutate={mutate} style={modalStyle} handleClose={handleClose} />
       </Modal>
     </Grid>
   )
-}
-
-export async function getStaticProps() {
-  const parsed = await fetch('https://jsonplaceholder.typicode.com/posts')
-  const posts = await parsed.json()
-
-  return {
-    props: {
-      posts
-    }
-  }
 }
 
 export default TableManagementPage

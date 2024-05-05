@@ -14,8 +14,14 @@ import Pencil from 'mdi-material-ui/Pencil'
 import Check from 'mdi-material-ui/Check'
 import Cancel from 'mdi-material-ui/Cancel'
 import DeleteAlert from 'mdi-material-ui/DeleteAlert'
-import { Backdrop, Box, Button, Fade, Modal, Typography } from '@mui/material'
+import { Backdrop, Box, Button, Chip, Fade, Modal, Typography } from '@mui/material'
 import { modalStyle } from 'src/configs/modal.config'
+import useSWR from 'swr'
+import { API_URL } from 'src/constants/environment'
+import { fetcher } from 'src/libs/axios'
+import { SettingTable } from 'src/types/setting'
+import { formatCurrency } from 'src/utils/price'
+import { getColorByTableType } from 'src/utils/color'
 
 interface Column {
   id: keyof Data
@@ -27,12 +33,13 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'code', label: 'code', minWidth: 100 },
+  { id: 'code', label: 'code', minWidth: 10 },
   {
     id: 'price',
     label: 'Price',
     minWidth: 170,
-    align: 'right'
+    align: 'right',
+    format: (value: number) => formatCurrency(value)
   },
   {
     id: 'type',
@@ -66,40 +73,24 @@ function createData(code: string, price: number, type: string, actions: any): Da
   return { code, price, type, actions }
 }
 
-const rows: Data[] = [
-  createData(
-    '001',
-    250,
-    'VIP',
-    <>
-      <Pencil /> <DeleteAlert />
-    </>
-  ),
-  createData(
-    '002',
-    150,
-    'NORMAL',
-    <>
-      <Pencil /> <DeleteAlert />
-    </>
-  ),
-  createData(
-    '003',
-    200,
-    'VIP',
-    <>
-      <Pencil /> <DeleteAlert />
-    </>
-  )
-]
-
-export const TableList = () => {
+export const TableList = ({ items }: { items: SettingTable[] }) => {
   // ** States
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
   const [editedRow, setEditedRow] = useState<Data | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
+
+  const rows = items?.map(item =>
+    createData(
+      item.id.toString(),
+      item.price,
+      item.type,
+      <>
+        <Pencil /> <DeleteAlert />
+      </>
+    )
+  )
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage)
@@ -134,8 +125,9 @@ export const TableList = () => {
     handleCloseEditModal()
   }
 
-  const renderValue = (value: any) => {
+  const renderValue = (column: Column, value: any) => {
     if (typeof value === 'boolean') return value ? <Check /> : <Cancel />
+    else if (column.format) return column.format(value)
     return value
   }
 
@@ -153,12 +145,12 @@ export const TableList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+            {rows?.map(row => {
               return (
                 <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                   {columns.map(column => {
                     const value = row[column.id]
-                    if (column.id === 'actions')
+                    if (column.id === 'actions') {
                       return (
                         <TableCell key={column.id} align='right'>
                           <Box>
@@ -171,10 +163,26 @@ export const TableList = () => {
                           </Box>
                         </TableCell>
                       )
+                    } else if (column.id === 'type') {
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          <Chip
+                            label={value}
+                            color={getColorByTableType(value as string) as any}
+                            sx={{
+                              height: 24,
+                              fontSize: '0.75rem',
+                              textTransform: 'capitalize',
+                              '& .MuiChip-label': { fontWeight: 500 }
+                            }}
+                          />
+                        </TableCell>
+                      )
+                    }
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {/* {column.format && typeof value === 'number' ? column.format(value) : value} */}
-                        {renderValue(value)}
+                        {renderValue(column, value)}
                       </TableCell>
                     )
                   })}
@@ -236,7 +244,7 @@ export const TableList = () => {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component='div'
-        count={rows.length}
+        count={rows?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

@@ -5,11 +5,16 @@ import { useState } from 'react'
 import CreateSetting from 'src/components/settings/Create'
 import { TableList } from 'src/components/settings/TableList'
 import { modalStyle } from 'src/configs/modal.config'
+import { API_URL } from 'src/constants/environment'
+import { axiosInstance, fetcher } from 'src/libs/axios'
+import useSWR from 'swr'
 
 const SettingsPage = () => {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+
+  const { data: listSetting, error, isLoading, mutate } = useSWR(`${API_URL}/setting-table`, fetcher)
 
   return (
     <Grid container spacing={6}>
@@ -22,7 +27,7 @@ const SettingsPage = () => {
 
       <Grid item xs={12}>
         <Card>
-          <TableList />
+          <TableList items={listSetting?.data?.data} />
         </Card>
       </Grid>
 
@@ -32,7 +37,7 @@ const SettingsPage = () => {
         aria-labelledby='modal-modal-title'
         aria-describedby='modal-modal-description'
       >
-        <CreateSetting style={modalStyle} />
+        <CreateSetting mutate={mutate} style={modalStyle} handleClose={handleClose} />
       </Modal>
     </Grid>
   )

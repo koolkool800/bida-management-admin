@@ -16,42 +16,52 @@ import Cancel from 'mdi-material-ui/Cancel'
 import DeleteAlert from 'mdi-material-ui/DeleteAlert'
 import { Backdrop, Box, Button, Chip, Fade, Modal, Typography } from '@mui/material'
 import { modalStyle } from 'src/configs/modal.config'
+import { Order } from 'src/types/order'
+import { KeyedMutator } from 'swr'
+import { formatCurrency } from 'src/utils/price'
+import { orderService } from 'src/services/order'
+import toast from 'react-hot-toast'
+import { getHourMinute } from 'src/utils/date'
 
 interface Column {
   id: keyof Data
   label: string
   minWidth?: number
   align?: 'right'
-  format?: (value: number) => string
+  format?: (value: any) => any
   actions?: React.ReactNode
 }
 
 const columns: readonly Column[] = [
-  { id: 'tableCode', label: 'Table code', minWidth: 100 },
-  { id: 'employeeCode', label: 'Employee code', minWidth: 170 },
+  { id: 'tableName', label: 'Table', minWidth: 100 },
+  { id: 'employeeName', label: 'Employee', minWidth: 170 },
   {
     id: 'currentPrice',
     label: 'Current price',
     minWidth: 170,
-    align: 'right'
+    align: 'right',
+    format: (value: number) => formatCurrency(value)
   },
   {
     id: 'startTime',
     label: 'Start time',
     minWidth: 170,
-    align: 'right'
+    align: 'right',
+    format: (value: string) => getHourMinute(value)
   },
   {
     id: 'endTime',
     label: 'End time',
     minWidth: 170,
-    align: 'right'
+    align: 'right',
+    format: (value: string) => getHourMinute(value)
   },
   {
     id: 'totalPrice',
     label: 'Total price',
     minWidth: 170,
-    align: 'right'
+    align: 'right',
+    format: (value: number) => formatCurrency(value)
   },
   {
     id: 'actions',
@@ -68,8 +78,8 @@ const columns: readonly Column[] = [
 ]
 
 interface Data {
-  tableCode: string
-  employeeCode: string
+  tableName: string
+  employeeName: string
   currentPrice: number
   startTime: Date
   endTime?: Date
@@ -78,8 +88,8 @@ interface Data {
 }
 
 function createData(
-  tableCode: string,
-  employeeCode: string,
+  tableName: string,
+  employeeName: string,
   currentPrice: number,
   startTime: Date,
   actions: React.ReactNode,
@@ -87,51 +97,28 @@ function createData(
   totalPrice?: number
 ): Data {
   return {
-    tableCode,
-    employeeCode,
+    tableName,
+    employeeName,
     currentPrice,
     startTime,
-    actions,
     endTime,
-    totalPrice
+    totalPrice,
+    actions
   }
 }
 
-const rows: Data[] = [
-  {
-    tableCode: '001',
-    employeeCode: '001',
-    currentPrice: 250,
-    startTime: new Date(),
-    actions: (
-      <>
-        <Pencil />
-        <DeleteAlert />
-      </>
-    )
-  },
-  {
-    tableCode: '002',
-    employeeCode: '002',
-    currentPrice: 300,
-    startTime: new Date(),
-    actions: (
-      <>
-        <Pencil />
-        <DeleteAlert />
-      </>
-    ),
-    endTime: new Date(),
-    totalPrice: 600
-  }
-]
+type Props = {
+  items: Order[]
+  mutate: KeyedMutator<any>
+  mutateList: KeyedMutator<any>
+}
 
-export const OrderList = () => {
+export const OrderList = ({ items, mutate, mutateList }: Props) => {
   // ** States
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
-  const [editedRow, setEditedRow] = useState<Data | null>(null)
+  const [editedRow, setEditedRow] = useState<number | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -143,8 +130,8 @@ export const OrderList = () => {
     setPage(0)
   }
 
-  const handleOpenEditModal = (row: Data) => {
-    setEditedRow(row)
+  const handleOpenEditModal = (idx: number) => {
+    setEditedRow(idx)
     setEditModalOpen(true)
   }
 
@@ -167,7 +154,22 @@ export const OrderList = () => {
     handleCloseEditModal()
   }
 
-  const renderValue = (value: any) => {
+  const rows: Data[] = items?.map(item => {
+    return createData(
+      item.tableName,
+      item.employeeName,
+      item.current_price,
+      item.start_time,
+      <>
+        <Pencil />
+        <DeleteAlert />
+      </>,
+      item.end_time,
+      item.total_price
+    )
+  })
+
+  const renderValue = (column: Column, value: any) => {
     if (typeof value === 'boolean')
       return (
         <Chip
@@ -181,8 +183,21 @@ export const OrderList = () => {
           }}
         />
       )
-    if (value instanceof Date) return value.getHours() + ':' + value.getMinutes()
+    if (column.format) return column.format(value)
     return value
+  }
+
+  const handleCheckOutTable = async () => {
+    const orderId = items[editedRow || 0].id
+    const r = await orderService.checkOut({ order_id: orderId })
+    if (r?.message === 'Successfully')
+      toast.success('Check out table successfully', {
+        position: 'top-right'
+      })
+
+    mutate()
+    mutateList()
+    handleCloseEditModal()
   }
 
   return (
@@ -199,16 +214,16 @@ export const OrderList = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => {
+            {rows?.map((row, idx) => {
               return (
-                <TableRow hover role='checkbox' tabIndex={-1} key={row.tableCode}>
+                <TableRow hover role='checkbox' tabIndex={-1} key={idx}>
                   {columns.map(column => {
                     const value = row[column.id]
                     if (column.id === 'actions')
                       return (
                         <TableCell key={column.id} align='right'>
                           <Box>
-                            <Button onClick={() => handleOpenEditModal(row)}>
+                            <Button onClick={() => handleOpenEditModal(idx)}>
                               <Pencil />
                             </Button>
                             <Button onClick={() => handleOpenDeleteModal()}>
@@ -220,7 +235,7 @@ export const OrderList = () => {
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {/* {column.format && typeof value === 'number' ? column.format(value) : value} */}
-                        {renderValue(value)}
+                        {renderValue(column, value)}
                       </TableCell>
                     )
                   })}
@@ -240,11 +255,20 @@ export const OrderList = () => {
           <Fade in={editModalOpen}>
             <Box sx={modalStyle}>
               <Typography id='transition-modal-title' variant='h6' component='h2'>
-                Text in a modal
+                Check out table
               </Typography>
               <Typography id='transition-modal-description' sx={{ mt: 2 }}>
-                Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
+                Do you want to check out this table?
               </Typography>
+
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', pt: '1rem' }}>
+                <Button variant='contained' onClick={() => handleCloseEditModal()}>
+                  Cancel
+                </Button>
+                <Button variant='outlined' onClick={() => handleCheckOutTable()}>
+                  Check out
+                </Button>
+              </Box>
             </Box>
           </Fade>
         }
