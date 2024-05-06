@@ -154,9 +154,9 @@ export const TableList = ({ items }: { items: SettingTable[] }) => {
                       return (
                         <TableCell key={column.id} align='right'>
                           <Box>
-                            <Button onClick={() => handleOpenEditModal(row)}>
+                            {/* <Button onClick={() => handleOpenEditModal(row)}>
                               <Pencil />
-                            </Button>
+                            </Button> */}
                             <Button onClick={() => handleOpenDeleteModal()}>
                               <DeleteAlert />
                             </Button>
