@@ -37,7 +37,7 @@ const columns: readonly Column[] = [
   { id: 'employeeName', label: 'Employee', minWidth: 170 },
   {
     id: 'currentPrice',
-    label: 'Current price',
+    label: 'Price/Hour',
     minWidth: 170,
     align: 'right',
     format: (value: number) => formatCurrency(value)
@@ -199,6 +199,9 @@ export const OrderList = ({ items, mutate, mutateList }: Props) => {
     mutateList()
     handleCloseEditModal()
   }
+
+  console.log({ rowsPerPage })
+  console.log({ page })
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>

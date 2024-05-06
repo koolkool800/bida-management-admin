@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid'
 import { Box, Button, Card, CardHeader, Modal, Tab, Tabs, Typography, styled } from '@mui/material'
 
 import { TableList } from 'src/components/table-management/TableList'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { modalStyle } from 'src/configs/modal.config'
 import CreateTable from 'src/components/table-management/Create'
 import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query'
@@ -32,9 +32,12 @@ const TableManagementPage = () => {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
+  const [queryParams, setQueryParams] = useState('')
 
   const [value, setValue] = useState('all')
-  const { data: listTable, mutate } = useSWR(`${API_URL}/tables`, fetcher)
+  const { data: listTable, mutate } = useSWR([`${API_URL}/tables`, queryParams], ([url, queryParams]) =>
+    fetcher(url, queryParams)
+  )
   const { data: listOrderTable, mutate: mutateOrder } = useSWR(`${API_URL}/orders`, fetcher)
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -78,7 +81,12 @@ const TableManagementPage = () => {
           </TabList>
 
           <TabPanel sx={{ p: 0 }} value='all'>
-            <TableList items={listTable?.data?.data} mutate={mutate} mutateOrder={mutateOrder} />
+            <TableList
+              items={listTable?.data?.data}
+              mutate={mutate}
+              mutateOrder={mutateOrder}
+              setQueryParams={setQueryParams}
+            />
           </TabPanel>
           <TabPanel sx={{ p: 0 }} value='booked'>
             <OrderList items={listOrderTable?.data?.data} mutate={mutateOrder} mutateList={mutate} />

@@ -29,7 +29,9 @@ export const axiosInstance = () => {
   return Axios
 }
 
-export const fetcher = (url: string) =>
-  axiosInstance()
-    .get(url)
+export const fetcher = (url: string, queryParams?: string) => {
+  console.log({ url, queryParams })
+  return axiosInstance()
+    .get(`${url}${queryParams ? `?${queryParams}` : ''}`)
     .then(res => res.data)
+}

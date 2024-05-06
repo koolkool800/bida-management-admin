@@ -22,6 +22,7 @@ import toast from 'react-hot-toast'
 import { KeyedMutator } from 'swr'
 import { orderService } from 'src/services/order'
 import { getColorByTableType } from 'src/utils/color'
+import { API_URL } from 'src/constants/environment'
 
 interface Column {
   id: keyof Data
@@ -91,8 +92,9 @@ type Props = {
   items: TableType[]
   mutate: KeyedMutator<any>
   mutateOrder: KeyedMutator<any>
+  setQueryParams: (params: string) => void
 }
-export const TableList = ({ items, mutate, mutateOrder }: Props) => {
+export const TableList = ({ items, mutate, mutateOrder, setQueryParams }: Props) => {
   // ** States
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
@@ -108,6 +110,8 @@ export const TableList = ({ items, mutate, mutateOrder }: Props) => {
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value)
     setPage(0)
+    setQueryParams(`?pageSize=${+event.target.value}&pageIndex=${1}`)
+    // mutate([`${API_URL}/tables`, `?pageSize=${rowsPerPage}&pageIndex=${1}`])
   }
 
   const handleOpenEditModal = (row: Data) => {
@@ -313,7 +317,7 @@ export const TableList = ({ items, mutate, mutateOrder }: Props) => {
         }
       />
       <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
+        rowsPerPageOptions={[2, 10, 25, 100]}
         component='div'
         count={rows?.length}
         rowsPerPage={rowsPerPage}
