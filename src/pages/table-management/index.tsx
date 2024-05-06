@@ -58,7 +58,7 @@ const TableManagementPage = () => {
           <TabList
             onChange={handleChange}
             aria-label='account-settings tabs'
-            sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}`, paddingBottom: '1rem' }}
+            sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}`, paddingBottom: '2rem' }}
           >
             <Tab
               value='all'
