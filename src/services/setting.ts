@@ -9,9 +9,9 @@ export const settingService = {
     try {
       const response = await axiosInstance().post('setting-table', data)
       return response.data
-    } catch (error) {
-      console.error('errorrrrr')
-      toast.error('Create setting failed', {
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error?.response?.data?.message, {
         position: 'top-right'
       })
     }
@@ -20,9 +20,8 @@ export const settingService = {
     try {
       const response = await axiosInstance().put(`setting-table/${data.id}`, data)
       return response.data
-    } catch (error) {
-      console.error(error)
-      toast.error('Update setting failed', {
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message, {
         position: 'top-right'
       })
     }
