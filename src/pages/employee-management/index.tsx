@@ -26,7 +26,7 @@ const EmployeeManagementPage = () => {
 
       <Grid item xs={12}>
         <Card>
-          <TableList items={listEmployee?.data?.data} />
+          <TableList items={listEmployee?.data?.data} mutate={mutate} />
         </Card>
       </Grid>
 

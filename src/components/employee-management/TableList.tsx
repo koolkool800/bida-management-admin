@@ -15,6 +15,9 @@ import DeleteAlert from 'mdi-material-ui/DeleteAlert'
 import { Backdrop, Box, Button, Fade, Modal, Typography, styled } from '@mui/material'
 import { modalStyle } from 'src/configs/modal.config'
 import { Employee } from 'src/types/user'
+import { KeyedMutator } from 'swr'
+import { employeeeService } from 'src/services/employee'
+import toast from 'react-hot-toast'
 
 const ImgStyled = styled('img')(({ theme }) => ({
   width: 60,
@@ -70,15 +73,17 @@ function createData(code: string, avatar: string, name: string, email: string, a
 
 type Props = {
   items: Employee[]
+  mutate: KeyedMutator<any>
 }
 
-export const TableList = ({ items }: Props) => {
+export const TableList = ({ items, mutate }: Props) => {
   // ** States
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
   const [editedRow, setEditedRow] = useState<Data | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
+  const [currentDeleteId, setCurrentDeleteId] = useState<string | null>(null)
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage)
@@ -99,11 +104,13 @@ export const TableList = ({ items }: Props) => {
     setEditModalOpen(false)
   }
 
-  const handleOpenDeleteModal = () => {
+  const handleOpenDeleteModal = (row: Data) => {
     setDeleteModalOpen(true)
+    setCurrentDeleteId(row.code)
   }
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false)
+    setCurrentDeleteId(null)
   }
 
   const handleSaveEditedRow = (updatedRow: Data) => {
@@ -111,6 +118,17 @@ export const TableList = ({ items }: Props) => {
     // For example, you can update the rows array
     // and then close the modal
     handleCloseEditModal()
+  }
+
+  const handleDeleteRow = async () => {
+    const r = await employeeeService.delete(Number(currentDeleteId))
+    if (r?.message === 'Successfully')
+      toast.success('Delete employee successfully', {
+        position: 'top-right'
+      })
+
+    mutate()
+    handleCloseDeleteModal()
   }
 
   const rows: Data[] = items?.map(item => {
@@ -152,7 +170,7 @@ export const TableList = ({ items }: Props) => {
                             {/* <Button onClick={() => handleOpenEditModal(row)}>
                               <Pencil />
                             </Button> */}
-                            <Button onClick={() => handleOpenDeleteModal()}>
+                            <Button onClick={() => handleOpenDeleteModal(row)}>
                               <DeleteAlert />
                             </Button>
                           </Box>
@@ -218,7 +236,7 @@ export const TableList = ({ items }: Props) => {
                 <Button variant='contained' onClick={() => {}}>
                   Cancel
                 </Button>
-                <Button variant='outlined' onClick={() => {}}>
+                <Button variant='outlined' onClick={() => handleDeleteRow()}>
                   Delete
                 </Button>
               </Box>

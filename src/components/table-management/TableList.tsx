@@ -110,7 +110,7 @@ export const TableList = ({ items, mutate, mutateOrder, setQueryParams }: Props)
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value)
     setPage(0)
-    setQueryParams(`?pageSize=${+event.target.value}&pageIndex=${1}`)
+    setQueryParams(`pageSize=${+event.target.value}&pageIndex=${1}`)
     // mutate([`${API_URL}/tables`, `?pageSize=${rowsPerPage}&pageIndex=${1}`])
   }
 

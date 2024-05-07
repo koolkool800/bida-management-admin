@@ -2,22 +2,32 @@
 import Grid from '@mui/material/Grid'
 
 // ** Demo Components Imports
-import { Box, Button, Card, CardHeader, Modal, Tab, Tabs, Typography, styled } from '@mui/material'
+import {
+  Box,
+  Button,
+  Card,
+  CardHeader,
+  InputAdornment,
+  Modal,
+  Tab,
+  Tabs,
+  TextField,
+  Typography,
+  styled
+} from '@mui/material'
 
 import { TableList } from 'src/components/table-management/TableList'
 import { useEffect, useState } from 'react'
 import { modalStyle } from 'src/configs/modal.config'
 import CreateTable from 'src/components/table-management/Create'
-import { QueryClient, dehydrate, useQuery } from '@tanstack/react-query'
 import { TabContext, TabList, TabPanel } from '@mui/lab'
-import TabSecurity from 'src/views/account-settings/TabSecurity'
-import AccountOutline from 'mdi-material-ui/AccountOutline'
 import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
 import Lock from 'mdi-material-ui/Lock'
 import { OrderList } from 'src/components/table-management/OrderList'
 import useSWR from 'swr'
 import { API_URL } from 'src/constants/environment'
 import { fetcher } from 'src/libs/axios'
+import Magnify from 'mdi-material-ui/Magnify'
 
 const TabName = styled('span')(({ theme }) => ({
   lineHeight: 1.71,
@@ -33,6 +43,7 @@ const TableManagementPage = () => {
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
   const [queryParams, setQueryParams] = useState('')
+  const [search, setSearch] = useState('')
 
   const [value, setValue] = useState('all')
   const { data: listTable, mutate } = useSWR([`${API_URL}/tables`, queryParams], ([url, queryParams]) =>
@@ -42,6 +53,19 @@ const TableManagementPage = () => {
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue)
+    setSearch('')
+  }
+
+  useEffect(() => {
+    console.log(queryParams)
+  }, [queryParams])
+
+  const handleSearch = () => {
+    if (search) {
+      // if (queryParams.includes('search')) {
+      setQueryParams(`${queryParams}&q=${search}`)
+      // } else setQueryParams(`q=${search}`)
+    }
   }
 
   return (
@@ -58,7 +82,8 @@ const TableManagementPage = () => {
           <TabList
             onChange={handleChange}
             aria-label='account-settings tabs'
-            sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}`, paddingBottom: '2rem' }}
+            sx={{ paddingBottom: '1.5rem' }}
+            // borderBottom: theme => `1px solid ${theme.palette.divider}`
           >
             <Tab
               value='all'
@@ -79,6 +104,26 @@ const TableManagementPage = () => {
               }
             />
           </TabList>
+
+          <Box sx={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
+            <TextField
+              size='small'
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
+              onChange={e => setSearch(e.target.value)}
+              value={search}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position='start'>
+                    <Magnify fontSize='small' />
+                  </InputAdornment>
+                )
+              }}
+            />
+
+            <Button onClick={() => handleSearch()} variant='contained'>
+              Search
+            </Button>
+          </Box>
 
           <TabPanel sx={{ p: 0 }} value='all'>
             <TableList

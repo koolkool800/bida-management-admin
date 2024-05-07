@@ -14,6 +14,16 @@ export const employeeeService = {
         position: 'top-right'
       })
     }
+  },
+  delete: async <T>(id: number): Promise<Response<T> | undefined> => {
+    try {
+      const response = await axiosInstance().delete(`employees/${id}`)
+      return response.data
+    } catch (error) {
+      toast.error('Delete employee failed', {
+        position: 'top-right'
+      })
+    }
   }
   //   update: async <T>(data: { type?: string; price?: number; id: number }): Promise<Response<T> | undefined> => {
   //     try {

@@ -27,7 +27,7 @@ const SettingsPage = () => {
 
       <Grid item xs={12}>
         <Card>
-          <TableList items={listSetting?.data?.data} />
+          <TableList items={listSetting?.data?.data} mutate={mutate} />
         </Card>
       </Grid>
 

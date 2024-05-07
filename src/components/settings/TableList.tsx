@@ -16,12 +16,14 @@ import Cancel from 'mdi-material-ui/Cancel'
 import DeleteAlert from 'mdi-material-ui/DeleteAlert'
 import { Backdrop, Box, Button, Chip, Fade, Modal, Typography } from '@mui/material'
 import { modalStyle } from 'src/configs/modal.config'
-import useSWR from 'swr'
+import useSWR, { KeyedMutator } from 'swr'
 import { API_URL } from 'src/constants/environment'
 import { fetcher } from 'src/libs/axios'
 import { SettingTable } from 'src/types/setting'
 import { formatCurrency } from 'src/utils/price'
 import { getColorByTableType } from 'src/utils/color'
+import { settingService } from 'src/services/setting'
+import toast from 'react-hot-toast'
 
 interface Column {
   id: keyof Data
@@ -73,13 +75,14 @@ function createData(code: string, price: number, type: string, actions: any): Da
   return { code, price, type, actions }
 }
 
-export const TableList = ({ items }: { items: SettingTable[] }) => {
+export const TableList = ({ items, mutate }: { items: SettingTable[]; mutate: KeyedMutator<any> }) => {
   // ** States
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
   const [editedRow, setEditedRow] = useState<Data | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
+  const [currentDeleteId, setCurrentDeleteId] = useState<string | null>(null)
 
   const rows = items?.map(item =>
     createData(
@@ -111,11 +114,13 @@ export const TableList = ({ items }: { items: SettingTable[] }) => {
     setEditModalOpen(false)
   }
 
-  const handleOpenDeleteModal = () => {
+  const handleOpenDeleteModal = (row: Data) => {
     setDeleteModalOpen(true)
+    setCurrentDeleteId(row.code)
   }
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false)
+    setCurrentDeleteId(null)
   }
 
   const handleSaveEditedRow = (updatedRow: Data) => {
@@ -123,6 +128,17 @@ export const TableList = ({ items }: { items: SettingTable[] }) => {
     // For example, you can update the rows array
     // and then close the modal
     handleCloseEditModal()
+  }
+
+  const handleDeleteRow = async () => {
+    const r = await settingService.delete(Number(currentDeleteId))
+    if (r?.message === 'Successfully')
+      toast.success('Delete table successfully', {
+        position: 'top-right'
+      })
+
+    mutate()
+    handleCloseDeleteModal()
   }
 
   const renderValue = (column: Column, value: any) => {
@@ -157,7 +173,7 @@ export const TableList = ({ items }: { items: SettingTable[] }) => {
                             {/* <Button onClick={() => handleOpenEditModal(row)}>
                               <Pencil />
                             </Button> */}
-                            <Button onClick={() => handleOpenDeleteModal()}>
+                            <Button onClick={() => handleOpenDeleteModal(row)}>
                               <DeleteAlert />
                             </Button>
                           </Box>
@@ -230,10 +246,10 @@ export const TableList = ({ items }: { items: SettingTable[] }) => {
                 You are coming to delete this table. Are you sure?
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', pt: '1rem' }}>
-                <Button variant='contained' onClick={() => {}}>
+                <Button variant='contained' onClick={() => handleCloseDeleteModal()}>
                   Cancel
                 </Button>
-                <Button variant='outlined' onClick={() => {}}>
+                <Button variant='outlined' onClick={() => handleDeleteRow()}>
                   Delete
                 </Button>
               </Box>

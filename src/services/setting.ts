@@ -35,5 +35,15 @@ export const settingService = {
       console.error(error)
       return null
     }
+  },
+  delete: async <T>(id: number): Promise<Response<T> | undefined> => {
+    try {
+      const response = await axiosInstance().delete(`setting-table/${id}`)
+      return response.data
+    } catch (error) {
+      toast.error('Delete setting failed', {
+        position: 'top-right'
+      })
+    }
   }
 }
