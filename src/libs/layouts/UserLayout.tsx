@@ -1,5 +1,5 @@
 // ** React Imports
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useLayoutEffect } from 'react'
 
 // ** MUI Imports
 import Box from '@mui/material/Box'
@@ -20,12 +20,25 @@ import VerticalAppBarContent from './components/vertical/AppBarContent'
 // ** Hook Import
 import { useSettings } from 'src/@core/hooks/useSettings'
 import toast, { Toaster } from 'react-hot-toast'
+import { getUserLocal } from 'src/utils/localStorage'
+import { useRouter } from 'next/router'
 interface Props {
   children: ReactNode
 }
 
 const UserLayout = ({ children }: Props) => {
   // ** Hooks
+  const user = getUserLocal()
+
+  const router = useRouter()
+
+  useLayoutEffect(() => {
+    console.log('hi')
+    if (!user) {
+      router.push('/pages/login')
+    }
+  }, [])
+
   const { settings, saveSettings } = useSettings()
 
   const hidden = useMediaQuery((theme: Theme) => theme.breakpoints.down('lg'))

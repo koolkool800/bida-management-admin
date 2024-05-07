@@ -61,7 +61,7 @@ const VerticalNavHeader = (props: Props) => {
       ) : (
         <Link href='/' passHref>
           <StyledLink>
-            <svg
+            {/* <svg
               width={30}
               height={25}
               version='1.1'
@@ -119,7 +119,13 @@ const VerticalNavHeader = (props: Props) => {
                   </g>
                 </g>
               </g>
-            </svg>
+            </svg> */}
+            <img
+              src='https://scontent.fsgn8-3.fna.fbcdn.net/v/t1.15752-9/440899189_453231470573083_2847076415321451489_n.png?_nc_cat=104&ccb=1-7&_nc_sid=5f2048&_nc_ohc=my7j3syq6Z8Q7kNvgHEzI6I&_nc_ht=scontent.fsgn8-3.fna&oh=03_Q7cD1QFbPA62NGlun2_ObfSng3H3QIBRDEvwgrHSTbTAYPptFA&oe=6661CC6C'
+              alt='logo bida'
+              width={40}
+              height={40}
+            />
             <HeaderTitle variant='h6' sx={{ ml: 3 }}>
               {themeConfig.templateName}
             </HeaderTitle>

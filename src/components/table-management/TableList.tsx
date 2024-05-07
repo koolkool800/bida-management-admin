@@ -23,6 +23,7 @@ import { KeyedMutator } from 'swr'
 import { orderService } from 'src/services/order'
 import { getColorByTableType } from 'src/utils/color'
 import { API_URL } from 'src/constants/environment'
+import { formatCurrency } from 'src/utils/price'
 
 interface Column {
   id: keyof Data
@@ -40,7 +41,8 @@ const columns: readonly Column[] = [
     id: 'price',
     label: 'Price',
     minWidth: 170,
-    align: 'right'
+    align: 'right',
+    format: (value: number) => formatCurrency(value)
   },
   {
     id: 'type',
@@ -180,7 +182,7 @@ export const TableList = ({ items, mutate, mutateOrder, setQueryParams }: Props)
     )
   })
 
-  const renderValue = (value: any) => {
+  const renderValue = (column: Column, value: any) => {
     if (typeof value === 'boolean')
       return (
         <Chip
@@ -194,6 +196,7 @@ export const TableList = ({ items, mutate, mutateOrder, setQueryParams }: Props)
           }}
         />
       )
+    if (column.format) return column.format(value)
     return value
   }
 
@@ -248,7 +251,7 @@ export const TableList = ({ items, mutate, mutateOrder, setQueryParams }: Props)
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {/* {column.format && typeof value === 'number' ? column.format(value) : value} */}
-                        {renderValue(value)}
+                        {renderValue(column, value)}
                       </TableCell>
                     )
                   })}
