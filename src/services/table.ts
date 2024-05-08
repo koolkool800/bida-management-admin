@@ -19,8 +19,8 @@ export const tableService = {
     try {
       const response = await axiosInstance().delete(`tables/${id}`)
       return response.data
-    } catch (error) {
-      toast.error('Delete table failed', {
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message, {
         position: 'top-right'
       })
     }
@@ -29,8 +29,8 @@ export const tableService = {
     try {
       const response = await axiosInstance().post('orders/check-in', data)
       return response.data
-    } catch (error) {
-      toast.error('Check in failed', {
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message, {
         position: 'top-right'
       })
     }

@@ -39,8 +39,8 @@ export const settingService = {
     try {
       const response = await axiosInstance().delete(`setting-table/${id}`)
       return response.data
-    } catch (error) {
-      toast.error('Delete setting failed', {
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message, {
         position: 'top-right'
       })
     }

@@ -9,8 +9,8 @@ export const employeeeService = {
     try {
       const response = await axiosInstance().post('employees', data)
       return response.data
-    } catch (error) {
-      toast.error('Create employee failed', {
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message, {
         position: 'top-right'
       })
     }
@@ -19,8 +19,8 @@ export const employeeeService = {
     try {
       const response = await axiosInstance().delete(`employees/${id}`)
       return response.data
-    } catch (error) {
-      toast.error('Delete employee failed', {
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message, {
         position: 'top-right'
       })
     }

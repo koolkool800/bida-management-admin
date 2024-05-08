@@ -18,8 +18,8 @@ export const orderService = {
     try {
       const response = await axiosInstance().post('orders/check-in', data)
       return response.data
-    } catch (error) {
-      toast.error('Check in failed', {
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message, {
         position: 'top-right'
       })
     }
@@ -28,8 +28,8 @@ export const orderService = {
     try {
       const response = await axiosInstance().post('orders/check-out', data)
       return response.data
-    } catch (error) {
-      toast.error('Check out failed', {
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message, {
         position: 'top-right'
       })
     }
