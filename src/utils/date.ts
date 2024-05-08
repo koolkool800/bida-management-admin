@@ -1,5 +1,5 @@
 export const getHourMinute = (date: string) => {
   if (!date) return ''
   const newDate = new Date(date)
-  return newDate.getHours() + ':' + newDate.getMinutes()
+  return newDate.toLocaleTimeString()
 }
