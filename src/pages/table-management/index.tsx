@@ -28,6 +28,7 @@ import useSWR from 'swr'
 import { API_URL } from 'src/constants/environment'
 import { fetcher } from 'src/libs/axios'
 import Magnify from 'mdi-material-ui/Magnify'
+import { BookingList } from 'src/components/table-management/BookingList'
 
 const TabName = styled('span')(({ theme }) => ({
   lineHeight: 1.71,
@@ -50,22 +51,15 @@ const TableManagementPage = () => {
     fetcher(url, queryParams)
   )
   const { data: listOrderTable, mutate: mutateOrder } = useSWR(`${API_URL}/orders`, fetcher)
+  const { data: listTableBooking, mutate: mutateBooking } = useSWR(`${API_URL}/tables?is_available=false`, fetcher)
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue)
     setSearch('')
   }
 
-  useEffect(() => {
-    console.log(queryParams)
-  }, [queryParams])
-
   const handleSearch = () => {
-    if (search) {
-      // if (queryParams.includes('search')) {
-      setQueryParams(`${queryParams}&q=${search}`)
-      // } else setQueryParams(`q=${search}`)
-    }
+    setQueryParams(`${queryParams}&q=${search}`)
   }
 
   return (
@@ -94,6 +88,20 @@ const TableManagementPage = () => {
                 </Box>
               }
             />
+
+            {/* 
+              TODO: Get list table just check in by is_available = false
+            */}
+            <Tab
+              value='booking'
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Lock />
+                  <TabName>Booking table</TabName>
+                </Box>
+              }
+            />
+
             <Tab
               value='booked'
               label={
@@ -130,11 +138,27 @@ const TableManagementPage = () => {
               items={listTable?.data?.data}
               mutate={mutate}
               mutateOrder={mutateOrder}
+              mutateBooking={mutateBooking}
               setQueryParams={setQueryParams}
             />
           </TabPanel>
+          <TabPanel sx={{ p: 0 }} value='booking'>
+            <BookingList
+              items={listTableBooking?.data?.data}
+              setQueryParams={setQueryParams}
+              mutate={mutateBooking}
+              mutateList={mutate}
+              mutateOrder={mutateOrder}
+            />
+          </TabPanel>
+
           <TabPanel sx={{ p: 0 }} value='booked'>
-            <OrderList items={listOrderTable?.data?.data} mutate={mutateOrder} mutateList={mutate} />
+            <OrderList
+              items={listOrderTable?.data?.data}
+              mutate={mutateOrder}
+              mutateList={mutate}
+              mutateBooking={mutateBooking}
+            />
           </TabPanel>
         </TabContext>
       </Card>

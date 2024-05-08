@@ -44,18 +44,6 @@ const columns: readonly Column[] = [
     label: 'Email',
     minWidth: 170,
     align: 'right'
-  },
-  {
-    id: 'actions',
-    label: 'Actions',
-    minWidth: 170,
-    align: 'right',
-    actions: (
-      <>
-        <Pencil />
-        <DeleteAlert />
-      </>
-    )
   }
 ]
 
@@ -64,11 +52,11 @@ interface Data {
   name: string
   avatar: string
   email: string
-  actions: React.ReactNode
+  // actions: React.ReactNode
 }
 
-function createData(code: string, avatar: string, name: string, email: string, actions: any): Data {
-  return { code, name, avatar, email, actions }
+function createData(code: string, avatar: string, name: string, email: string): Data {
+  return { code, name, avatar, email }
 }
 
 type Props = {
@@ -132,15 +120,7 @@ export const TableList = ({ items, mutate }: Props) => {
   }
 
   const rows: Data[] = items?.map(item => {
-    return createData(
-      item.id.toString(),
-      '/images/avatars/1.png',
-      item.name,
-      item.user_name,
-      <>
-        <Pencil /> <DeleteAlert />
-      </>
-    )
+    return createData(item.id.toString(), '/images/avatars/1.png', item.name, item.user_name)
   })
 
   return (
@@ -163,19 +143,6 @@ export const TableList = ({ items, mutate }: Props) => {
                   {columns.map(column => {
                     const value = row[column.id]
 
-                    if (column.id === 'actions')
-                      return (
-                        <TableCell key={column.id} align='right'>
-                          <Box>
-                            {/* <Button onClick={() => handleOpenEditModal(row)}>
-                              <Pencil />
-                            </Button> */}
-                            <Button onClick={() => handleOpenDeleteModal(row)}>
-                              <DeleteAlert />
-                            </Button>
-                          </Box>
-                        </TableCell>
-                      )
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {column.id === 'avatar' ? (

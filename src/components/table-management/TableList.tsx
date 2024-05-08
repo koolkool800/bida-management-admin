@@ -24,6 +24,7 @@ import { orderService } from 'src/services/order'
 import { getColorByTableType } from 'src/utils/color'
 import { API_URL } from 'src/constants/environment'
 import { formatCurrency } from 'src/utils/price'
+import { getUserLocal } from 'src/utils/localStorage'
 
 interface Column {
   id: keyof Data
@@ -94,9 +95,10 @@ type Props = {
   items: TableType[]
   mutate: KeyedMutator<any>
   mutateOrder: KeyedMutator<any>
+  mutateBooking: KeyedMutator<any>
   setQueryParams: (params: string) => void
 }
-export const TableList = ({ items, mutate, mutateOrder, setQueryParams }: Props) => {
+export const TableList = ({ items, mutate, mutateOrder, setQueryParams, mutateBooking }: Props) => {
   // ** States
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
@@ -104,6 +106,7 @@ export const TableList = ({ items, mutate, mutateOrder, setQueryParams }: Props)
   const [checkInRow, setCheckInRow] = useState<Data | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
   const [currentDeleteId, setCurrentDeleteId] = useState<string | null>(null)
+  const user = getUserLocal()
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage)
@@ -156,7 +159,7 @@ export const TableList = ({ items, mutate, mutateOrder, setQueryParams }: Props)
   const handleCheckInTable = async () => {
     const r = await orderService.checkIn({
       table_id: Number(checkInRow?.code),
-      user_id: 7
+      user_id: user?.id as number
     })
 
     if (r?.message === 'Successfully')
@@ -166,6 +169,7 @@ export const TableList = ({ items, mutate, mutateOrder, setQueryParams }: Props)
 
     mutate()
     mutateOrder()
+    mutateBooking()
     handleCloseEditModal()
   }
 

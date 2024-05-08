@@ -3,6 +3,7 @@ export type User = {
   name: string
   access_token: string
   expires_in: number
+  id: number
 }
 
 export type Employee = {

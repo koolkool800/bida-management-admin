@@ -4,4 +4,5 @@ export type TableType = {
   is_available: number
   price: number
   type: string
+  order_id: number
 }

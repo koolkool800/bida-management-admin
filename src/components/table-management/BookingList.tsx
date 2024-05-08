@@ -16,52 +16,47 @@ import Cancel from 'mdi-material-ui/Cancel'
 import DeleteAlert from 'mdi-material-ui/DeleteAlert'
 import { Backdrop, Box, Button, Chip, Fade, Modal, Typography } from '@mui/material'
 import { modalStyle } from 'src/configs/modal.config'
-import { Order } from 'src/types/order'
-import { KeyedMutator } from 'swr'
-import { formatCurrency } from 'src/utils/price'
-import { orderService } from 'src/services/order'
+import { TableType } from 'src/types/table'
+import { tableService } from 'src/services/table'
 import toast from 'react-hot-toast'
-import { getHourMinute } from 'src/utils/date'
+import { KeyedMutator } from 'swr'
+import { orderService } from 'src/services/order'
+import { getColorByTableType } from 'src/utils/color'
+import { API_URL } from 'src/constants/environment'
+import { formatCurrency } from 'src/utils/price'
+import { getUserLocal } from 'src/utils/localStorage'
+import CheckOutline from 'mdi-material-ui/CheckOutline'
 
 interface Column {
   id: keyof Data
   label: string
   minWidth?: number
   align?: 'right'
-  format?: (value: any) => any
+  format?: (value: number) => string
   actions?: React.ReactNode
 }
 
 const columns: readonly Column[] = [
-  { id: 'tableName', label: 'Table', minWidth: 100 },
-  { id: 'employeeName', label: 'Employee', minWidth: 170 },
+  { id: 'code', label: 'code', minWidth: 100 },
+  { id: 'name', label: 'Name', minWidth: 170 },
   {
-    id: 'currentPrice',
-    label: 'Price/Hour',
+    id: 'price',
+    label: 'Price',
     minWidth: 170,
     align: 'right',
     format: (value: number) => formatCurrency(value)
   },
   {
-    id: 'startTime',
-    label: 'Start time',
+    id: 'type',
+    label: 'Table type',
     minWidth: 170,
-    align: 'right',
-    format: (value: string) => getHourMinute(value)
+    align: 'right'
   },
   {
-    id: 'endTime',
-    label: 'End time',
+    id: 'is_available',
+    label: 'Available',
     minWidth: 170,
-    align: 'right',
-    format: (value: string) => getHourMinute(value)
-  },
-  {
-    id: 'totalPrice',
-    label: 'Total price',
-    minWidth: 170,
-    align: 'right',
-    format: (value: number) => formatCurrency(value)
+    align: 'right'
   },
   {
     id: 'actions',
@@ -78,49 +73,41 @@ const columns: readonly Column[] = [
 ]
 
 interface Data {
-  tableName: string
-  employeeName: string
-  currentPrice: number
-  startTime: Date
-  endTime?: Date
-  totalPrice?: number
+  code: string
+  name: string
+  price: number
+  type: string // VIP || NORMAL
+  is_available: boolean
   actions: React.ReactNode
 }
 
 function createData(
-  tableName: string,
-  employeeName: string,
-  currentPrice: number,
-  startTime: Date,
-  actions: React.ReactNode,
-  endTime?: Date,
-  totalPrice?: number
+  code: string,
+  name: string,
+  price: number,
+  type: string,
+  is_available: boolean,
+  actions: any
 ): Data {
-  return {
-    tableName,
-    employeeName,
-    currentPrice,
-    startTime,
-    endTime,
-    totalPrice,
-    actions
-  }
+  return { code, name, price, type, is_available, actions }
 }
 
 type Props = {
-  items: Order[]
+  items: TableType[]
   mutate: KeyedMutator<any>
+  mutateOrder: KeyedMutator<any>
   mutateList: KeyedMutator<any>
-  mutateBooking: KeyedMutator<any>
+  setQueryParams: (params: string) => void
 }
 
-export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) => {
+export const BookingList = ({ items, mutate, mutateOrder, setQueryParams, mutateList }: Props) => {
   // ** States
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
-  const [editedRow, setEditedRow] = useState<number | null>(null)
+  const [checkOutRow, setCheckOutRow] = useState<number | null>(null)
   const [deleteModalOpen, setDeleteModalOpen] = useState<boolean>(false)
+  const [currentDeleteId, setCurrentDeleteId] = useState<string | null>(null)
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage)
@@ -129,23 +116,27 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value)
     setPage(0)
+    setQueryParams(`pageSize=${+event.target.value}&pageIndex=${1}`)
+    // mutate([`${API_URL}/tables`, `?pageSize=${rowsPerPage}&pageIndex=${1}`])
   }
 
   const handleOpenEditModal = (idx: number) => {
-    setEditedRow(idx)
+    setCheckOutRow(idx)
     setEditModalOpen(true)
   }
 
   const handleCloseEditModal = () => {
-    setEditedRow(null)
+    setCheckOutRow(null)
     setEditModalOpen(false)
   }
 
-  const handleOpenDeleteModal = () => {
+  const handleOpenDeleteModal = (row: Data) => {
     setDeleteModalOpen(true)
+    setCurrentDeleteId(row.code)
   }
   const handleCloseDeleteModal = () => {
     setDeleteModalOpen(false)
+    setCurrentDeleteId(null)
   }
 
   const handleSaveEditedRow = (updatedRow: Data) => {
@@ -155,18 +146,41 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
     handleCloseEditModal()
   }
 
+  const handleDeleteRow = async () => {
+    const r = await tableService.delete(Number(currentDeleteId))
+    if (r?.message === 'Successfully')
+      toast.success('Delete table successfully', {
+        position: 'top-right'
+      })
+
+    mutate()
+    handleCloseDeleteModal()
+  }
+
+  const handleCheckOutTable = async () => {
+    const orderId = items[checkOutRow || 0].order_id
+    const r = await orderService.checkOut({ order_id: orderId })
+    if (r?.message === 'Successfully')
+      toast.success('Check out table successfully', {
+        position: 'top-right'
+      })
+
+    mutate()
+    mutateList()
+    mutateOrder()
+    handleCloseEditModal()
+  }
+
   const rows: Data[] = items?.map(item => {
     return createData(
-      item.tableName,
-      item.employeeName,
-      item.current_price,
-      item.start_time,
+      item.id.toString(),
+      item.name,
+      item.price,
+      item.type,
+      Boolean(item.is_available),
       <>
-        <Pencil />
-        <DeleteAlert />
-      </>,
-      item.end_time,
-      item.total_price
+        <Pencil /> <DeleteAlert />
+      </>
     )
   })
 
@@ -188,20 +202,6 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
     return value
   }
 
-  const handleCheckOutTable = async () => {
-    const orderId = items[editedRow || 0].id
-    const r = await orderService.checkOut({ order_id: orderId })
-    if (r?.message === 'Successfully')
-      toast.success('Check out table successfully', {
-        position: 'top-right'
-      })
-
-    mutate()
-    mutateBooking()
-    mutateList()
-    handleCloseEditModal()
-  }
-
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <TableContainer sx={{ maxHeight: 440 }}>
@@ -218,7 +218,7 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
           <TableBody>
             {rows?.map((row, idx) => {
               return (
-                <TableRow hover role='checkbox' tabIndex={-1} key={idx}>
+                <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                   {columns.map(column => {
                     const value = row[column.id]
                     if (column.id === 'actions')
@@ -226,14 +226,27 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
                         <TableCell key={column.id} align='right'>
                           <Box>
                             <Button onClick={() => handleOpenEditModal(idx)}>
-                              <Pencil />
-                            </Button>
-                            <Button onClick={() => handleOpenDeleteModal()}>
-                              <DeleteAlert />
+                              <CheckOutline />
                             </Button>
                           </Box>
                         </TableCell>
                       )
+                    else if (column.id === 'type') {
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          <Chip
+                            label={value}
+                            color={getColorByTableType(value as string) as any}
+                            sx={{
+                              height: 24,
+                              fontSize: '0.75rem',
+                              textTransform: 'capitalize',
+                              '& .MuiChip-label': { fontWeight: 500 }
+                            }}
+                          />
+                        </TableCell>
+                      )
+                    }
                     return (
                       <TableCell key={column.id} align={column.align}>
                         {/* {column.format && typeof value === 'number' ? column.format(value) : value} */}
@@ -257,7 +270,7 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
           <Fade in={editModalOpen}>
             <Box sx={modalStyle}>
               <Typography id='transition-modal-title' variant='h6' component='h2'>
-                Check out table
+                Check in table
               </Typography>
               <Typography id='transition-modal-description' sx={{ mt: 2 }}>
                 Do you want to check out this table?
@@ -294,10 +307,10 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
                 You are coming to delete this table. Are you sure?
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', pt: '1rem' }}>
-                <Button variant='contained' onClick={() => {}}>
+                <Button variant='contained' onClick={() => handleCloseDeleteModal()}>
                   Cancel
                 </Button>
-                <Button variant='outlined' onClick={() => {}}>
+                <Button variant='outlined' onClick={() => handleDeleteRow()}>
                   Delete
                 </Button>
               </Box>
@@ -306,9 +319,9 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
         }
       />
       <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
+        rowsPerPageOptions={[2, 10, 25, 100]}
         component='div'
-        count={rows.length}
+        count={rows?.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
