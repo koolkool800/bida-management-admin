@@ -89,10 +89,7 @@ const TableManagementPage = () => {
               }
             />
 
-            {/* 
-              TODO: Get list table just check in by is_available = false
-            */}
-            <Tab
+            {/* <Tab
               value='booking'
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -100,7 +97,7 @@ const TableManagementPage = () => {
                   <TabName>Booking table</TabName>
                 </Box>
               }
-            />
+            /> */}
 
             <Tab
               value='booked'
@@ -142,7 +139,7 @@ const TableManagementPage = () => {
               setQueryParams={setQueryParams}
             />
           </TabPanel>
-          <TabPanel sx={{ p: 0 }} value='booking'>
+          {/* <TabPanel sx={{ p: 0 }} value='booking'>
             <BookingList
               items={listTableBooking?.data?.data}
               setQueryParams={setQueryParams}
@@ -150,7 +147,7 @@ const TableManagementPage = () => {
               mutateList={mutate}
               mutateOrder={mutateOrder}
             />
-          </TabPanel>
+          </TabPanel> */}
 
           <TabPanel sx={{ p: 0 }} value='booked'>
             <OrderList
