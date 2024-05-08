@@ -17,11 +17,11 @@ import { VerticalNavItemsType } from 'src/@core/layouts/types'
 
 const navigation = (): VerticalNavItemsType => {
   return [
-    // {
-    //   title: 'Trang chủ',
-    //   icon: HomeOutline,
-    //   path: '/'
-    // },
+    {
+      title: 'Trang chủ',
+      icon: HomeOutline,
+      path: '/'
+    },
     {
       title: 'Quản lý bàn',
       icon: Billiards,

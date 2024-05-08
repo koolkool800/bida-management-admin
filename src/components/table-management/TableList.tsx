@@ -31,13 +31,19 @@ interface Column {
   label: string
   minWidth?: number
   align?: 'right'
-  format?: (value: number) => string
+  format?: (value: any) => any
   actions?: React.ReactNode
 }
 
 const columns: readonly Column[] = [
   { id: 'code', label: 'code', minWidth: 100 },
   { id: 'name', label: 'Tên bàn', minWidth: 170 },
+  {
+    id: 'avatar',
+    label: 'Bida',
+    minWidth: 170,
+    format: (value: string) => <img src={value} alt='bida' style={{ width: '200px', height: '100px' }} />
+  },
   {
     id: 'price',
     label: 'Giá',
@@ -74,6 +80,7 @@ const columns: readonly Column[] = [
 interface Data {
   code: string
   name: string
+  avatar: string
   price: number
   type: string // VIP || NORMAL
   is_available: boolean
@@ -83,12 +90,13 @@ interface Data {
 function createData(
   code: string,
   name: string,
+  avatar: string,
   price: number,
   type: string,
   is_available: boolean,
   actions: any
 ): Data {
-  return { code, name, price, type, is_available, actions }
+  return { code, name, avatar, price, type, is_available, actions }
 }
 
 type Props = {
@@ -177,6 +185,7 @@ export const TableList = ({ items, mutate, mutateOrder, setQueryParams, mutateBo
     return createData(
       item.id.toString(),
       item.name,
+      'https://scontent.fsgn8-4.fna.fbcdn.net/v/t1.15752-9/438270987_6858749857560668_8307698790179701267_n.png?_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=C0bzvp88GdoQ7kNvgHO4eyX&_nc_ht=scontent.fsgn8-4.fna&oh=03_Q7cD1QHdBre8BoS-eyLlY1i2Im-AuRLO3ThD-cOGlqUtret2UQ&oe=6662AEA2',
       item.price,
       item.type,
       Boolean(item.is_available),
