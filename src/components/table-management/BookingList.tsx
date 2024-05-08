@@ -57,19 +57,19 @@ const columns: readonly Column[] = [
     label: 'Available',
     minWidth: 170,
     align: 'right'
-  },
-  {
-    id: 'actions',
-    label: 'Actions',
-    minWidth: 170,
-    align: 'right',
-    actions: (
-      <>
-        <Pencil />
-        <DeleteAlert />
-      </>
-    )
   }
+  // {
+  //   id: 'actions',
+  //   label: 'Actions',
+  //   minWidth: 170,
+  //   align: 'right',
+  //   actions: (
+  //     <>
+  //       <Pencil />
+  //       <DeleteAlert />
+  //     </>
+  //   )
+  // }
 ]
 
 interface Data {
@@ -78,18 +78,11 @@ interface Data {
   price: number
   type: string // VIP || NORMAL
   is_available: boolean
-  actions: React.ReactNode
+  // actions: React.ReactNode
 }
 
-function createData(
-  code: string,
-  name: string,
-  price: number,
-  type: string,
-  is_available: boolean,
-  actions: any
-): Data {
-  return { code, name, price, type, is_available, actions }
+function createData(code: string, name: string, price: number, type: string, is_available: boolean): Data {
+  return { code, name, price, type, is_available }
 }
 
 type Props = {
@@ -177,10 +170,10 @@ export const BookingList = ({ items, mutate, mutateOrder, setQueryParams, mutate
       item.name,
       item.price,
       item.type,
-      Boolean(item.is_available),
-      <>
-        <Pencil /> <DeleteAlert />
-      </>
+      Boolean(item.is_available)
+      // <>
+      //   <Pencil /> <DeleteAlert />
+      // </>
     )
   })
 
@@ -221,17 +214,18 @@ export const BookingList = ({ items, mutate, mutateOrder, setQueryParams, mutate
                 <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
                   {columns.map(column => {
                     const value = row[column.id]
-                    if (column.id === 'actions')
-                      return (
-                        <TableCell key={column.id} align='right'>
-                          <Box>
-                            <Button onClick={() => handleOpenEditModal(idx)}>
-                              <CheckOutline />
-                            </Button>
-                          </Box>
-                        </TableCell>
-                      )
-                    else if (column.id === 'type') {
+                    // if (column.id === 'actions')
+                    //   return (
+                    //     <TableCell key={column.id} align='right'>
+                    //       <Box>
+                    //         <Button onClick={() => handleOpenEditModal(idx)}>
+                    //           <CheckOutline />
+                    //         </Button>
+                    //       </Box>
+                    //     </TableCell>
+                    //   )
+                    // else
+                    if (column.id === 'type') {
                       return (
                         <TableCell key={column.id} align={column.align}>
                           <Chip
