@@ -17,25 +17,26 @@ import { VerticalNavItemsType } from 'src/@core/layouts/types'
 
 const navigation = (): VerticalNavItemsType => {
   return [
+    // {
+    //   title: 'Trang chủ',
+    //   icon: HomeOutline,
+    //   path: '/'
+    // },
     {
-      title: 'Dashboard',
-      icon: HomeOutline,
-      path: '/'
+      title: 'Quản lý bàn',
+      icon: Billiards,
+      path: '/table-management'
     },
+
     {
-      title: 'Settings',
-      icon: CogOutline,
-      path: '/settings'
-    },
-    {
-      title: 'Employee Management',
+      title: 'Quản lý nhân viên',
       icon: AccountCogOutline,
       path: '/employee-management'
     },
     {
-      title: 'Table management',
-      icon: Billiards,
-      path: '/table-management'
+      title: 'Cài đặt',
+      icon: CogOutline,
+      path: '/settings'
     }
   ]
 }

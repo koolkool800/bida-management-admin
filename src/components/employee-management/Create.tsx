@@ -86,23 +86,18 @@ const CreateEmployee = ({
 
   return (
     <Card sx={style}>
-      <CardHeader title='Create employee' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader title='Tạo nhân viên' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={5}>
             <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label='Name'
-                placeholder='Leonard Carter'
-                {...register('name', { required: true })}
-              />
+              <TextField fullWidth label='Tên' placeholder='Leonard Carter' {...register('name', { required: true })} />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 type='text'
-                label='Username'
+                label='Tài khoản'
                 placeholder='carterleonard'
                 helperText='You can use letters, numbers & periods'
                 {...register('user_name', {
@@ -114,7 +109,7 @@ const CreateEmployee = ({
               <FormControl fullWidth>
                 <InputLabel htmlFor='form-layouts-basic-password'>Password</InputLabel>
                 <OutlinedInput
-                  label='Password'
+                  label='Mật khẩu'
                   value={watch('password')}
                   type={values.showPassword ? 'text' : 'password'}
                   aria-describedby='form-layouts-basic-password-helper'
@@ -134,7 +129,7 @@ const CreateEmployee = ({
                     required: true
                   })}
                 />
-                <FormHelperText>Use 8 or more characters with a mix of letters, numbers & symbols</FormHelperText>
+                {/* <FormHelperText>Use 8 or more characters with a mix of letters, numbers & symbols</FormHelperText> */}
               </FormControl>
             </Grid>
 
@@ -149,7 +144,7 @@ const CreateEmployee = ({
                 }}
               >
                 <Button type='submit' variant='contained' size='large'>
-                  Create
+                  Tạo mới
                 </Button>
               </Box>
             </Grid>

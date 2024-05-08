@@ -33,39 +33,39 @@ interface Column {
 }
 
 const columns: readonly Column[] = [
-  { id: 'tableName', label: 'Table', minWidth: 100 },
-  { id: 'employeeName', label: 'Employee', minWidth: 170 },
+  { id: 'tableName', label: 'Bàn', minWidth: 100 },
+  { id: 'employeeName', label: 'Nhân viên', minWidth: 170 },
   {
     id: 'currentPrice',
-    label: 'Price/Hour',
+    label: 'Giá/giờ',
     minWidth: 170,
     align: 'right',
     format: (value: number) => formatCurrency(value)
   },
   {
     id: 'startTime',
-    label: 'Start time',
+    label: 'Giờ bắt đầu',
     minWidth: 170,
     align: 'right',
     format: (value: string) => getHourMinute(value)
   },
   {
     id: 'endTime',
-    label: 'End time',
+    label: 'Giờ kết thúc',
     minWidth: 170,
     align: 'right',
     format: (value: string) => getHourMinute(value)
   },
   {
     id: 'totalPrice',
-    label: 'Total price',
+    label: 'Tổng giá',
     minWidth: 170,
     align: 'right',
     format: (value: number) => formatCurrency(value)
   },
   {
     id: 'actions',
-    label: 'Actions',
+    label: 'Hành động',
     minWidth: 170,
     align: 'right',
     actions: (
@@ -257,15 +257,15 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
           <Fade in={editModalOpen}>
             <Box sx={modalStyle}>
               <Typography id='transition-modal-title' variant='h6' component='h2'>
-                Check out table
+                Check out bàn
               </Typography>
               <Typography id='transition-modal-description' sx={{ mt: 2 }}>
-                Do you want to check out this table?
+                Bạn có chắc chắn muốn check out bàn này?
               </Typography>
 
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', pt: '1rem' }}>
                 <Button variant='contained' onClick={() => handleCloseEditModal()}>
-                  Cancel
+                  Hủy
                 </Button>
                 <Button variant='outlined' onClick={() => handleCheckOutTable()}>
                   Check out
@@ -288,17 +288,17 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
           <Fade in={deleteModalOpen}>
             <Box sx={modalStyle}>
               <Typography id='transition-modal-title' variant='h6' component='h2'>
-                WARNING
+                CẢNH BÁO
               </Typography>
               <Typography id='transition-modal-description' sx={{ mt: 2 }}>
-                You are coming to delete this table. Are you sure?
+                Bạn có chắc chắn muốn xóa bàn này không?
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', pt: '1rem' }}>
                 <Button variant='contained' onClick={() => {}}>
-                  Cancel
+                  Hủy
                 </Button>
                 <Button variant='outlined' onClick={() => {}}>
-                  Delete
+                  Xóa
                 </Button>
               </Box>
             </Box>

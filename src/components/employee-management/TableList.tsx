@@ -37,8 +37,8 @@ interface Column {
 
 const columns: readonly Column[] = [
   { id: 'code', label: 'code', minWidth: 100 },
-  { id: 'name', label: 'Name', minWidth: 170 },
-  { id: 'avatar', label: 'Avatar', minWidth: 170 },
+  { id: 'name', label: 'Tên', minWidth: 170 },
+  { id: 'avatar', label: 'Ảnh đại diện', minWidth: 170 },
   {
     id: 'email',
     label: 'Email',
@@ -194,17 +194,17 @@ export const TableList = ({ items, mutate }: Props) => {
           <Fade in={deleteModalOpen}>
             <Box sx={modalStyle}>
               <Typography id='transition-modal-title' variant='h6' component='h2'>
-                WARNING
+                CẢNH BÁO
               </Typography>
               <Typography id='transition-modal-description' sx={{ mt: 2 }}>
-                You are coming to delete this employee. Are you sure?
+                Bạn có chắc chắn muốn xóa nhân viên này không?
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', pt: '1rem' }}>
                 <Button variant='contained' onClick={() => {}}>
-                  Cancel
+                  Hủy
                 </Button>
                 <Button variant='outlined' onClick={() => handleDeleteRow()}>
-                  Delete
+                  Xóa
                 </Button>
               </Box>
             </Box>

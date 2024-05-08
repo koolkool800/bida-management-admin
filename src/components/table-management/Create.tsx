@@ -87,12 +87,12 @@ const CreateTable = ({
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={5}>
             <Grid item xs={12}>
-              <TextField fullWidth label='Name' placeholder='Ban VIP' {...register('name', { required: true })} />
+              <TextField fullWidth label='Tên bàn' placeholder='Ban VIP' {...register('name', { required: true })} />
             </Grid>
 
             <Grid item xs={12}>
               <FormControl fullWidth>
-                <InputLabel id='demo-simple-select-helper-label'>Type</InputLabel>
+                <InputLabel id='demo-simple-select-helper-label'>Loại bàn</InputLabel>
                 <Select
                   labelId='demo-simple-select-helper-label'
                   id='demo-simple-select-helper'
@@ -110,7 +110,7 @@ const CreateTable = ({
                     )
                   })}
                 </Select>
-                <FormHelperText>Type and price/hour</FormHelperText>
+                <FormHelperText>Loại bàn và giá / giờ</FormHelperText>
               </FormControl>
             </Grid>
 
@@ -125,7 +125,7 @@ const CreateTable = ({
                 }}
               >
                 <Button type='submit' variant='contained' size='large'>
-                  Create
+                  Tạo mới
                 </Button>
               </Box>
             </Grid>

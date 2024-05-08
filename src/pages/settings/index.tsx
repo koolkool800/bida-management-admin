@@ -21,7 +21,7 @@ const SettingsPage = () => {
       <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant='h5'>Setting management</Typography>
         <Button variant='outlined' onClick={handleOpen}>
-          Create
+          Tạo mới
         </Button>
       </Grid>
 

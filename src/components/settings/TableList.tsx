@@ -38,21 +38,21 @@ const columns: readonly Column[] = [
   { id: 'code', label: 'code', minWidth: 10 },
   {
     id: 'price',
-    label: 'Price',
+    label: 'Giá',
     minWidth: 170,
     align: 'right',
     format: (value: number) => formatCurrency(value)
   },
   {
     id: 'type',
-    label: 'Table type',
+    label: 'Loại bàn',
     minWidth: 170,
     align: 'right'
   },
 
   {
     id: 'actions',
-    label: 'Actions',
+    label: 'Hành động',
     minWidth: 170,
     align: 'right',
     actions: (
@@ -240,17 +240,17 @@ export const TableList = ({ items, mutate }: { items: SettingTable[]; mutate: Ke
           <Fade in={deleteModalOpen}>
             <Box sx={modalStyle}>
               <Typography id='transition-modal-title' variant='h6' component='h2'>
-                WARNING
+                CẢNH BÁO
               </Typography>
               <Typography id='transition-modal-description' sx={{ mt: 2 }}>
-                You are coming to delete this table. Are you sure?
+                Bạn có chắc chắn muốn xóa bàn này không?
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', pt: '1rem' }}>
                 <Button variant='contained' onClick={() => handleCloseDeleteModal()}>
-                  Cancel
+                  Hủy
                 </Button>
                 <Button variant='outlined' onClick={() => handleDeleteRow()}>
-                  Delete
+                  Xóa
                 </Button>
               </Box>
             </Box>

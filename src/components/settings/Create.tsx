@@ -64,21 +64,16 @@ const CreateSetting = ({
 
   return (
     <Card sx={style}>
-      <CardHeader title='Create new setting' titleTypographyProps={{ variant: 'h6' }} />
+      <CardHeader title='Tạo cài đặt mới' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={5}>
             <Grid item xs={12}>
-              <TextField fullWidth label='Type' placeholder='VIP' {...register('type', { required: true })} />
+              <TextField fullWidth label='Loại' placeholder='VIP' {...register('type', { required: true })} />
             </Grid>
 
             <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label='Price per hour'
-                placeholder='1000'
-                {...register('price', { required: true })}
-              />
+              <TextField fullWidth label='Giá 1 giờ' placeholder='1000' {...register('price', { required: true })} />
             </Grid>
 
             <Grid item xs={12}>
@@ -92,7 +87,7 @@ const CreateSetting = ({
                 }}
               >
                 <Button type='submit' variant='contained' size='large'>
-                  Create
+                  Tạo
                 </Button>
               </Box>
             </Grid>

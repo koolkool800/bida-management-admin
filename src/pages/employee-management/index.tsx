@@ -18,9 +18,9 @@ const EmployeeManagementPage = () => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant='h5'>Employee management</Typography>
+        <Typography variant='h5'>Quản lý nhân viên</Typography>
         <Button variant='outlined' onClick={handleOpen}>
-          Create
+          Tạo mới
         </Button>
       </Grid>
 

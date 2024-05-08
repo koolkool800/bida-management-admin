@@ -38,23 +38,23 @@ interface Column {
 
 const columns: readonly Column[] = [
   { id: 'code', label: 'code', minWidth: 100 },
-  { id: 'name', label: 'Name', minWidth: 170 },
+  { id: 'name', label: 'Tên', minWidth: 170 },
   {
     id: 'price',
-    label: 'Price',
+    label: 'Giá',
     minWidth: 170,
     align: 'right',
     format: (value: number) => formatCurrency(value)
   },
   {
     id: 'type',
-    label: 'Table type',
+    label: 'Loại bàn',
     minWidth: 170,
     align: 'right'
   },
   {
     id: 'is_available',
-    label: 'Available',
+    label: 'Có sẵn',
     minWidth: 170,
     align: 'right'
   }
@@ -264,10 +264,10 @@ export const BookingList = ({ items, mutate, mutateOrder, setQueryParams, mutate
           <Fade in={editModalOpen}>
             <Box sx={modalStyle}>
               <Typography id='transition-modal-title' variant='h6' component='h2'>
-                Check in table
+                Check out bàn
               </Typography>
               <Typography id='transition-modal-description' sx={{ mt: 2 }}>
-                Do you want to check out this table?
+                Bạn có chắc chắn muốn check out bàn này?
               </Typography>
 
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', pt: '1rem' }}>
@@ -295,10 +295,10 @@ export const BookingList = ({ items, mutate, mutateOrder, setQueryParams, mutate
           <Fade in={deleteModalOpen}>
             <Box sx={modalStyle}>
               <Typography id='transition-modal-title' variant='h6' component='h2'>
-                WARNING
+                CẢNH BÁO
               </Typography>
               <Typography id='transition-modal-description' sx={{ mt: 2 }}>
-                You are coming to delete this table. Are you sure?
+                Bạn có chắc chắn muốn xóa bàn này không?
               </Typography>
               <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', pt: '1rem' }}>
                 <Button variant='contained' onClick={() => handleCloseDeleteModal()}>

@@ -65,9 +65,9 @@ const TableManagementPage = () => {
   return (
     <Grid container spacing={6}>
       <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant='h5'>Table management</Typography>
+        <Typography variant='h5'>Quản lý bàn</Typography>
         <Button variant='outlined' onClick={handleOpen}>
-          Create
+          Tạo mới
         </Button>
       </Grid>
 
@@ -84,7 +84,7 @@ const TableManagementPage = () => {
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <LockOpenOutline />
-                  <TabName>All table</TabName>
+                  <TabName>Tất cả</TabName>
                 </Box>
               }
             />
@@ -94,7 +94,7 @@ const TableManagementPage = () => {
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Lock />
-                  <TabName>Booking table</TabName>
+                  <TabName>Bàn đang đặt</TabName>
                 </Box>
               }
             />
@@ -104,7 +104,7 @@ const TableManagementPage = () => {
               label={
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Lock />
-                  <TabName>Booked table</TabName>
+                  <TabName>Bàn đã đặt</TabName>
                 </Box>
               }
             />
@@ -126,7 +126,7 @@ const TableManagementPage = () => {
             />
 
             <Button onClick={() => handleSearch()} variant='contained'>
-              Search
+              Tìm kiếm
             </Button>
           </Box>
 
