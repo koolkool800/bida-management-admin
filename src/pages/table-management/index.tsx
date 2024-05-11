@@ -50,7 +50,6 @@ const TableManagementPage = () => {
   const { data: listTable, mutate } = useSWR([`${API_URL}/tables`, queryParams], ([url, queryParams]) =>
     fetcher(url, queryParams)
   )
-  const { data: listOrderTable, mutate: mutateOrder } = useSWR(`${API_URL}/orders`, fetcher)
   const { data: listTableBooking, mutate: mutateBooking } = useSWR(`${API_URL}/tables?is_available=false`, fetcher)
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -98,16 +97,6 @@ const TableManagementPage = () => {
                 </Box>
               }
             />
-
-            <Tab
-              value='booked'
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Lock />
-                  <TabName>Bàn đã đặt</TabName>
-                </Box>
-              }
-            />
           </TabList>
 
           <Box sx={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
@@ -134,7 +123,6 @@ const TableManagementPage = () => {
             <TableList
               items={listTable?.data?.data}
               mutate={mutate}
-              mutateOrder={mutateOrder}
               mutateBooking={mutateBooking}
               setQueryParams={setQueryParams}
             />
@@ -145,16 +133,6 @@ const TableManagementPage = () => {
               setQueryParams={setQueryParams}
               mutate={mutateBooking}
               mutateList={mutate}
-              mutateOrder={mutateOrder}
-            />
-          </TabPanel>
-
-          <TabPanel sx={{ p: 0 }} value='booked'>
-            <OrderList
-              items={listOrderTable?.data?.data}
-              mutate={mutateOrder}
-              mutateList={mutate}
-              mutateBooking={mutateBooking}
             />
           </TabPanel>
         </TabContext>

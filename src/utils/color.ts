@@ -1,3 +1,5 @@
+import { MenuType } from 'src/types/menu'
+
 export const getColorByTableType = (type: string) => {
   let color = ''
   switch (type) {
@@ -15,6 +17,20 @@ export const getColorByTableType = (type: string) => {
       break
     default:
       color = 'error'
+      break
+  }
+
+  return color
+}
+
+export const getColorByMenuType = (type: string) => {
+  let color = ''
+  switch (type) {
+    case MenuType.DRINK:
+      color = 'error'
+      break
+    default:
+      color = 'success'
       break
   }
 

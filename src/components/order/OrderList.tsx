@@ -23,7 +23,10 @@ import { orderService } from 'src/services/order'
 import toast from 'react-hot-toast'
 import { getHourMinute } from 'src/utils/date'
 import CheckOutline from 'mdi-material-ui/CheckOutline'
+import Eye from 'mdi-material-ui/Eye'
+
 import UpdateOrder from 'src/components/table-management/UpdateOrder'
+import { useRouter } from 'next/router'
 
 interface Column {
   id: keyof Data
@@ -112,17 +115,16 @@ function createData(
 type Props = {
   items: Order[]
   mutate: KeyedMutator<any>
-  mutateList: KeyedMutator<any>
-  mutateBooking: KeyedMutator<any>
 }
 
-export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) => {
+export const OrderList = ({ items, mutate }: Props) => {
   // ** States
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
   const [editModalOpen, setEditModalOpen] = useState<boolean>(false)
-  const [editedRow, setEditedRow] = useState<number | null>(null)
+  const [checkoutRow, setCheckoutRow] = useState<number | null>(null)
   const [openEditOrder, setOpenEditOrder] = useState<boolean>(false)
+  const router = useRouter()
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage)
@@ -133,13 +135,13 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
     setPage(0)
   }
 
-  const handleOpenEditModal = (idx: number) => {
-    setEditedRow(idx)
+  const handleOpenCheckoutModal = (idx: number) => {
+    setCheckoutRow(idx)
     setEditModalOpen(true)
   }
 
   const handleCloseEditModal = () => {
-    setEditedRow(null)
+    setCheckoutRow(null)
     setEditModalOpen(false)
   }
 
@@ -192,7 +194,7 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
   }
 
   const handleCheckOutTable = async () => {
-    const orderId = items[editedRow || 0].id
+    const orderId = items[checkoutRow || 0].id
     const r = await orderService.checkOut({ order_id: orderId })
     if (r?.message === 'Successfully')
       toast.success('Check out table successfully', {
@@ -200,8 +202,6 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
       })
 
     mutate()
-    mutateBooking()
-    mutateList()
     handleCloseEditModal()
   }
 
@@ -228,12 +228,19 @@ export const OrderList = ({ items, mutate, mutateList, mutateBooking }: Props) =
                       return (
                         <TableCell key={column.id} align='right'>
                           <Box>
-                            <Button onClick={() => handleOpenEditModal(idx)}>
+                            <Button
+                              onClick={() => {
+                                router.push(`/order/${items[idx].id}`)
+                              }}
+                            >
+                              <Eye />
+                            </Button>
+                            <Button onClick={() => handleOpenCheckoutModal(idx)}>
                               <CheckOutline />
                             </Button>
-                            <Button onClick={() => handleOpenDeleteModal()}>
+                            {/* <Button onClick={() => handleOpenDeleteModal()}>
                               <Pencil />
-                            </Button>
+                            </Button> */}
                           </Box>
                         </TableCell>
                       )
