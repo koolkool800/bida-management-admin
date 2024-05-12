@@ -41,7 +41,7 @@ export const orderService = {
       })
     }
   },
-  checkOut: async <T>(data: { order_id: number }): Promise<Response<T> | undefined> => {
+  checkOut: async <T>(data: { order_id: number; customer_name?: string }): Promise<Response<T> | undefined> => {
     try {
       const response = await axiosInstance().post('orders/check-out', data)
       return response.data
@@ -54,6 +54,16 @@ export const orderService = {
   updateProduct: async <T>(data: { order_id: number; products: IAddProduct[] }): Promise<Response<T> | undefined> => {
     try {
       const response = await axiosInstance().post(`orders/${data.order_id}/products`, { products: data.products })
+      return response.data
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message, {
+        position: 'top-right'
+      })
+    }
+  },
+  getTotalPrice: async <T>(data: { order_id: number }): Promise<Response<T> | undefined> => {
+    try {
+      const response = await axiosInstance().get(`orders/${data.order_id}/total-price`)
       return response.data
     } catch (error: any) {
       toast.error(error?.response?.data?.message, {

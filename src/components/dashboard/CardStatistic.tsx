@@ -11,7 +11,7 @@ import HelpCircleOutline from 'mdi-material-ui/HelpCircleOutline'
 type Props = {
   title: string
   icon: any
-  value: string
+  value: any
 }
 
 const CardStatistic = (props: Props) => {
@@ -34,12 +34,9 @@ const CardStatistic = (props: Props) => {
         <Typography variant='h6' sx={{ marginBottom: 2.75 }}>
           {props.title}
         </Typography>
-        <Typography variant='h4' sx={{ marginBottom: 6 }}>
+        <Typography variant='h5' sx={{ marginBottom: 6 }}>
           {props.value}
         </Typography>
-        {/* <Button variant='contained' sx={{ padding: theme => theme.spacing(1.75, 5.5) }}>
-          Contact Now
-        </Button> */}
       </CardContent>
     </Card>
   )

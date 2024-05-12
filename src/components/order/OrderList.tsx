@@ -115,9 +115,10 @@ function createData(
 type Props = {
   items: Order[]
   mutate: KeyedMutator<any>
+  setQueryParams: (params: string) => void
 }
 
-export const OrderList = ({ items, mutate }: Props) => {
+export const OrderList = ({ items, mutate, setQueryParams }: Props) => {
   // ** States
   const [page, setPage] = useState<number>(0)
   const [rowsPerPage, setRowsPerPage] = useState<number>(10)
@@ -133,6 +134,7 @@ export const OrderList = ({ items, mutate }: Props) => {
   const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(+event.target.value)
     setPage(0)
+    setQueryParams(`pageSize=${+event.target.value}&pageIndex=${1}`)
   }
 
   const handleOpenCheckoutModal = (idx: number) => {
@@ -235,7 +237,7 @@ export const OrderList = ({ items, mutate }: Props) => {
                             >
                               <Eye />
                             </Button>
-                            <Button onClick={() => handleOpenCheckoutModal(idx)}>
+                            <Button disabled={!!items[idx].total_price} onClick={() => handleOpenCheckoutModal(idx)}>
                               <CheckOutline />
                             </Button>
                             {/* <Button onClick={() => handleOpenDeleteModal()}>
@@ -285,23 +287,7 @@ export const OrderList = ({ items, mutate }: Props) => {
           </Fade>
         }
       />
-      {/* Render the edit modal component and pass editedRow and handleSaveEditedRow */}
-      {/* For example: <EditModal row={editedRow} onSave={handleSaveEditedRow} /> */}
-      {/* Delete Modal*/}
-      <Modal
-        aria-labelledby='transition-modal-title'
-        aria-describedby='transition-modal-description'
-        open={openEditOrder}
-        onClose={handleCloseEditOrderModal}
-        closeAfterTransition
-        children={
-          <Fade in={openEditOrder}>
-            <Box sx={modalStyle}>
-              <UpdateOrder handleClose={handleCloseEditOrderModal} mutate={mutate} />
-            </Box>
-          </Fade>
-        }
-      />
+
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component='div'

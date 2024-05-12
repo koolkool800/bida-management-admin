@@ -9,9 +9,10 @@ export type Order = {
   end_time?: Date
   tableName: string
   current_price: number
-  total_price: number
-  total_product_price: number
+  total_price?: number
+  total_product_price?: number
   table_name: string
   setting_table_type: string
+  customer_name?: string
   order_detail: OrderDetail[]
 }

@@ -43,6 +43,7 @@ import { authService } from 'src/services/auth'
 import { User } from 'src/types/user'
 import { authUtils } from 'src/utils/auth'
 import { getUserLocal } from 'src/utils/localStorage'
+import toast from 'react-hot-toast'
 
 interface State {
   password: string
@@ -82,10 +83,11 @@ const LoginPage = () => {
       const response = await authService.login<User>(data)
       if (response?.message === 'Successfully') {
         authUtils.handleLogin(response.data)
+        router.push('/')
       }
-      router.push('/')
-    } catch (error) {
-      console.log(error)
+    } catch (error: any) {
+      console.log('go here')
+      toast.error('Login failed', { position: 'top-right' })
     }
   }
 

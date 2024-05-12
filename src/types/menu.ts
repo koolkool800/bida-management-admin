@@ -12,6 +12,7 @@ export type OrderDetail = {
   product_price: number
   product_type: MenuType
   image_url: string
+  created_at: Date
 }
 
 export enum MenuType {

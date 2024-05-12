@@ -4,6 +4,7 @@ import AccountCogOutline from 'mdi-material-ui/AccountCogOutline'
 import Billiards from 'mdi-material-ui/Billiards'
 import CogOutline from 'mdi-material-ui/CogOutline'
 import Food from 'mdi-material-ui/Food'
+import NotePlus from 'mdi-material-ui/NotePlus'
 
 // ** Type import
 import { VerticalNavItemsType } from 'src/@core/layouts/types'
@@ -16,18 +17,13 @@ const navigation = (): VerticalNavItemsType => {
       path: '/'
     },
     {
-      title: 'Trang chủ Ref',
-      icon: HomeOutline,
-      path: '/ref'
-    },
-    {
       title: 'Quản lý bàn',
       icon: Billiards,
       path: '/table-management'
     },
     {
       title: 'Hóa đơn',
-      icon: Billiards,
+      icon: NotePlus,
       path: '/order'
     },
     {
@@ -35,20 +31,16 @@ const navigation = (): VerticalNavItemsType => {
       icon: AccountCogOutline,
       path: '/employee-management'
     },
-    {
-      title: 'Cài đặt',
-      icon: CogOutline,
-      path: '/settings'
-    },
+
     {
       title: 'Quản lý thực đơn',
       icon: Food,
       path: '/menu'
     },
     {
-      title: 'carrd',
-      icon: Billiards,
-      path: '/cards'
+      title: 'Cài đặt',
+      icon: CogOutline,
+      path: '/settings'
     }
   ]
 }

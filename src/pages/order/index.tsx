@@ -24,15 +24,18 @@ const OrderPage = () => {
   const [queryParams, setQueryParams] = useState('')
 
   const handleSearch = () => {
-    setQueryParams(`${queryParams}&q=${search}`)
+    setQueryParams(`q=${search}`)
   }
 
-  const { data: listOrderTable, mutate: mutateOrder } = useSWR(`${API_URL}/orders`, fetcher)
+  const { data: listOrderTable, mutate: mutateOrder } = useSWR(
+    [`${API_URL}/orders`, queryParams],
+    ([url, queryParams]) => fetcher(url, queryParams)
+  )
 
   return (
     <Grid container spacing={6}>
       <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant='h5'>Quản lý bàn</Typography>
+        <Typography variant='h5'>Quản lý hóa đơn</Typography>
       </Grid>
 
       <Card sx={{ width: '100%', mt: '1rem' }}>
@@ -56,7 +59,7 @@ const OrderPage = () => {
           </Button>
         </Box>
 
-        <OrderList items={listOrderTable?.data?.data} mutate={mutateOrder} />
+        <OrderList setQueryParams={setQueryParams} items={listOrderTable?.data?.data} mutate={mutateOrder} />
       </Card>
     </Grid>
   )
