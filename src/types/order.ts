@@ -1,3 +1,5 @@
+import { OrderDetail } from 'src/types/menu'
+
 export type Order = {
   id: number
   table_id: number
@@ -8,4 +10,8 @@ export type Order = {
   tableName: string
   current_price: number
   total_price: number
+  total_product_price: number
+  table_name: string
+  setting_table_type: string
+  order_detail: OrderDetail[]
 }

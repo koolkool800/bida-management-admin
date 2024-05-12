@@ -214,7 +214,7 @@ export const TableList = ({ items, mutate, setQueryParams, mutateBooking }: Prop
 
   return (
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
-      {items.length > 0 ? (
+      {items?.length > 0 ? (
         <TableContainer sx={{ maxHeight: 440 }}>
           <Table aria-label='sticky table'>
             <TableHead>
@@ -335,7 +335,7 @@ export const TableList = ({ items, mutate, setQueryParams, mutateBooking }: Prop
           </Fade>
         }
       />
-      {items.length > 0 && (
+      {items?.length > 0 && (
         <TablePagination
           rowsPerPageOptions={[2, 10, 25, 100]}
           component='div'

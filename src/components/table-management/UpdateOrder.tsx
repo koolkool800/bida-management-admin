@@ -31,25 +31,23 @@ import { SettingTable } from 'src/types/setting'
 import { formatCurrency } from 'src/utils/price'
 import { tableService } from 'src/services/table'
 import toast from 'react-hot-toast'
-import { orderMenus } from 'src/types/menu'
+import { Product } from 'src/types/menu'
 import { modalStyle } from 'src/configs/modal.config'
+import { orderService } from 'src/services/order'
 
 type FormValues = {
-  name: string
-  settingTableId: number
-}
-
-interface ISettingTable {
-  id: number
-  type: string
+  quantity: number
+  product_id: number
   price: number
 }
 
 const UpdateOrder = ({
   style,
   mutate,
-  handleClose
+  handleClose,
+  orderId
 }: {
+  orderId: number
   handleClose: () => void
   mutate: KeyedMutator<any>
   style?: SxProps<Theme> | undefined
@@ -61,18 +59,27 @@ const UpdateOrder = ({
     watch
   } = useForm<FormValues>()
 
-  const { data: listSetting } = useSWR(`${API_URL}/setting-table`, fetcher)
+  const { data: listProduct } = useSWR(`${API_URL}/products?pageSize=10000`, queryParams => fetcher(queryParams))
   const [openAddMenu, setOpenAddMenu] = useState(false)
 
   const onSubmit = async (data: FormValues) => {
     try {
-      const response = await tableService.create({
-        name: data.name,
-        setting_table_id: data.settingTableId
+      const products = listProduct?.data?.data as Product[]
+      const price = products?.find(product => product.id === data.product_id)?.price || 0
+
+      const response = await orderService.updateProduct({
+        order_id: orderId,
+        products: [
+          {
+            price: price,
+            product_id: data.product_id,
+            quantity: data.quantity
+          }
+        ]
       })
 
-      if (response?.message === 'Successfully') {
-        toast.success('Create table successfully', {
+      if (response?.data === 1) {
+        toast.success('Thêm thành công', {
           position: 'top-right'
         })
       }
@@ -87,64 +94,6 @@ const UpdateOrder = ({
     <Card sx={style}>
       <CardHeader title='Thực đơn của bàn' titleTypographyProps={{ variant: 'h6' }} />
       <CardContent>
-        {/* <form onSubmit={handleSubmit(onSubmit)}>
-          <Grid container spacing={5}>
-            <Grid item xs={12}>
-              <TextField fullWidth label='Tên bàn' placeholder='Ban VIP' {...register('name', { required: true })} />
-            </Grid>
-
-            <Grid item xs={12}>
-              <FormControl fullWidth>
-                <InputLabel id='demo-simple-select-helper-label'>Loại bàn</InputLabel>
-                <Select
-                  labelId='demo-simple-select-helper-label'
-                  id='demo-simple-select-helper'
-                  value={watch('settingTableId')}
-                  label='Type'
-                  {...register('settingTableId', {
-                    required: true
-                  })}
-                >
-                  {listSetting?.data?.data.map((setting: SettingTable) => {
-                    return (
-                      <MenuItem key={setting.id} value={setting.id}>
-                        {setting.type} - {formatCurrency(setting.price)}
-                      </MenuItem>
-                    )
-                  })}
-                </Select>
-                <FormHelperText>Loại bàn và giá / giờ</FormHelperText>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={12}>
-              <Box
-                sx={{
-                  gap: 5,
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  alignItems: 'center',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <Button type='submit' variant='contained' size='large'>
-                  Tạo mới
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </form> */}
-        <Grid container spacing={5}>
-          {orderMenus.map(order => {
-            return (
-              <Grid item xs={12} gap={2} container>
-                <TextField fullWidth label='Món' placeholder='Ban VIP' disabled value={order.menu_name} />
-                <TextField label='SL' placeholder='Ban VIP' value={order.quantity} disabled />
-              </Grid>
-            )
-          })}
-        </Grid>
-
         <Button variant='contained' size='large' sx={{ mt: 4 }} onClick={() => setOpenAddMenu(true)}>
           Thêm món
         </Button>
@@ -157,58 +106,58 @@ const UpdateOrder = ({
           closeAfterTransition
           children={
             <Fade in={openAddMenu}>
-              <Box sx={modalStyle}>
-                <Grid container spacing={5}>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label='Tên bàn'
-                      placeholder='Ban VIP'
-                      {...register('name', { required: true })}
-                    />
-                  </Grid>
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <Box sx={modalStyle}>
+                  <Grid container spacing={2}>
+                    <CardHeader title='Thêm món' titleTypographyProps={{ variant: 'h6' }} />
 
-                  <Grid item xs={12}>
-                    <FormControl fullWidth>
-                      <InputLabel id='demo-simple-select-helper-label'>Loại bàn</InputLabel>
-                      <Select
-                        labelId='demo-simple-select-helper-label'
-                        id='demo-simple-select-helper'
-                        value={watch('settingTableId')}
-                        label='Type'
-                        {...register('settingTableId', {
-                          required: true
-                        })}
+                    <Grid item xs={12}>
+                      <FormControl fullWidth>
+                        <InputLabel id='demo-simple-select-helper-label'>Thực đơn</InputLabel>
+                        <Select
+                          labelId='demo-simple-select-helper-label'
+                          id='demo-simple-select-helper'
+                          value={watch('product_id')}
+                          label='Type'
+                          {...register('product_id', {
+                            required: true
+                          })}
+                        >
+                          {listProduct?.data?.data?.map((product: any) => {
+                            return (
+                              <MenuItem key={product.id} value={product.id}>
+                                {product?.name} - {formatCurrency(product.price)}
+                              </MenuItem>
+                            )
+                          })}
+                        </Select>
+                        <FormHelperText>Loại bàn và giá / giờ</FormHelperText>
+                      </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <TextField fullWidth label='SL' placeholder='1' {...register('quantity', { required: true })} />
+                    </Grid>
+
+                    <Grid item xs={12}>
+                      <Box
+                        sx={{
+                          gap: 5,
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          pt: 4
+                        }}
                       >
-                        {listSetting?.data?.data.map((setting: SettingTable) => {
-                          return (
-                            <MenuItem key={setting.id} value={setting.id}>
-                              {setting.type} - {formatCurrency(setting.price)}
-                            </MenuItem>
-                          )
-                        })}
-                      </Select>
-                      <FormHelperText>Loại bàn và giá / giờ</FormHelperText>
-                    </FormControl>
+                        <Button type='submit' variant='contained' size='large'>
+                          Thêm
+                        </Button>
+                      </Box>
+                    </Grid>
                   </Grid>
-
-                  <Grid item xs={12}>
-                    <Box
-                      sx={{
-                        gap: 5,
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        alignItems: 'center',
-                        justifyContent: 'space-between'
-                      }}
-                    >
-                      <Button type='submit' variant='contained' size='large'>
-                        Tạo mới
-                      </Button>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </Box>
+                </Box>
+              </form>
             </Fade>
           }
         />
