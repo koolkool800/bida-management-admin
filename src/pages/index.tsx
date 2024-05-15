@@ -24,6 +24,13 @@ import { API_URL } from 'src/constants/environment'
 import { fetcher } from 'src/libs/axios'
 import { StatisticDashboard } from 'src/types/dashboard'
 import { formatCurrency } from 'src/utils/price'
+import DepositWithdraw from 'src/views/dashboard/DepositWithdraw'
+import RecentOrders from 'src/components/dashboard/DepositWithdraw'
+import WeeklyOverview from 'src/views/dashboard/WeeklyOverview'
+import RevenueChart from 'src/components/dashboard/RevenueChart'
+import Trophy from 'src/views/dashboard/Trophy'
+import BestSeller from 'src/components/dashboard/BestSeller'
+import StatisticsCard from 'src/components/dashboard/StatisticsCard'
 
 const topTables = [
   {
@@ -51,73 +58,29 @@ const topTables = [
 const Dashboard = () => {
   const { data: statisticData, mutate } = useSWR(`${API_URL}/statistical`, fetcher)
   const statistic = statisticData?.data as StatisticDashboard
-  const itemsStatistic = [
-    {
-      icon: CurrencyUsd,
-      title: 'Doanh thu',
-      value: formatCurrency(statistic?.revenue)
-    },
-    {
-      icon: NotePlus,
-      title: 'Hóa đơn',
-      value: statistic?.total_invoice
-    },
-    {
-      icon: FoodForkDrink,
-      title: 'Món ăn',
-      value: statistic?.total_product
-    },
-    {
-      icon: AccountMultiple,
-      title: 'Nhân viên',
-      value: statistic?.total_employee
-    },
-    {
-      icon: Billiards,
-      title: 'Bàn',
-      value: statistic?.top_revenue_table?.length || 0
-    }
-  ]
 
   return (
     <Grid container spacing={2} gap={12}>
-      <Grid container spacing={6}>
+      {/* <Grid container spacing={6}>
         {itemsStatistic.map((item, index) => (
           <Grid item xs={12} sm={6} md={12 / 5}>
             <CardStatistic icon={item.icon} title={item.title} value={item.value} />
           </Grid>
         ))}
-      </Grid>
-
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          <Typography variant='h5' sx={{ marginBottom: 6 }}>
-            Hóa đơn gần đây
-          </Typography>
-          <Grid flexDirection={'column'} container gap={8}>
-            {statistic?.recent_invoice?.map((invoice, index) => (
-              <Card sx={{ display: 'flex', padding: '10px' }}>
-                <Box
-                  sx={{
-                    width: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '10px 20px'
-                  }}
-                >
-                  <Typography component='div' variant='h5'>
-                    HD{invoice.id} - {invoice?.customer_name || 'Khách lẻ'}
-                  </Typography>
-                  <Typography variant='h5' color='text.secondary' component='div'>
-                    {formatCurrency(invoice.total_price)}
-                  </Typography>
-                </Box>
-              </Card>
-            ))}
-          </Grid>
+      </Grid> */}
+      <Grid container spacing={6}>
+        <Grid item xs={12} md={4}>
+          <BestSeller item={statistic?.top_revenue_table?.[0]} />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={8}>
+          <StatisticsCard />
+        </Grid>
+      </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={4}>
+          <RecentOrders items={statistic?.recent_invoice} />
+        </Grid>
+        {/* <Grid item xs={6} md={8}>
           <Typography variant='h5' sx={{ marginBottom: 6 }}>
             Top bàn doanh thu cao nhất
           </Typography>
@@ -152,6 +115,9 @@ const Dashboard = () => {
               ))}
             </Grid>
           </Paper>
+        </Grid> */}
+        <Grid item xs={12} md={8}>
+          <RevenueChart />
         </Grid>
       </Grid>
     </Grid>

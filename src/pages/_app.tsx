@@ -30,6 +30,8 @@ import 'react-perfect-scrollbar/dist/css/styles.css'
 // ** Global css styles
 import '../../styles/globals.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { MODE, saveLocalStorage } from 'src/utils/localStorage'
 
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
@@ -60,6 +62,10 @@ const App = (props: ExtendedAppProps) => {
 
   // Variables
   const getLayout = Component.getLayout ?? (page => <UserLayout>{page}</UserLayout>)
+
+  useEffect(() => {
+    saveLocalStorage({ data: 'dark', name: MODE })
+  }, [])
 
   return (
     <QueryClientProvider client={queryClient}>

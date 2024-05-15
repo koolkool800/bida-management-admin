@@ -8,6 +8,7 @@ import WeatherSunny from 'mdi-material-ui/WeatherSunny'
 
 // ** Type Import
 import { Settings } from 'src/@core/context/settingsContext'
+import { MODE, localHandler, saveLocalStorage } from 'src/utils/localStorage'
 
 interface Props {
   settings: Settings
@@ -25,8 +26,10 @@ const ModeToggler = (props: Props) => {
   const handleModeToggle = () => {
     if (settings.mode === 'light') {
       handleModeChange('dark')
+      saveLocalStorage({ data: 'dark', name: MODE })
     } else {
       handleModeChange('light')
+      saveLocalStorage({ data: 'light', name: MODE })
     }
   }
 

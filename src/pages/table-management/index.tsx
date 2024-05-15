@@ -1,3 +1,4 @@
+'use client'
 // ** MUI Imports
 import Grid from '@mui/material/Grid'
 
@@ -29,6 +30,7 @@ import { API_URL } from 'src/constants/environment'
 import { fetcher } from 'src/libs/axios'
 import Magnify from 'mdi-material-ui/Magnify'
 import { BookingList } from 'src/components/table-management/BookingList'
+import NewTableList from 'src/components/table-management/NewTableList'
 
 const TabName = styled('span')(({ theme }) => ({
   lineHeight: 1.71,
@@ -43,101 +45,21 @@ const TableManagementPage = () => {
   const [open, setOpen] = useState(false)
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
-  const [queryParams, setQueryParams] = useState('')
-  const [search, setSearch] = useState('')
 
-  const [value, setValue] = useState('all')
-  const { data: listTable, mutate } = useSWR([`${API_URL}/tables`, queryParams], ([url, queryParams]) =>
-    fetcher(url, queryParams)
-  )
-  const { data: listTableBooking, mutate: mutateBooking } = useSWR(`${API_URL}/tables?is_available=false`, fetcher)
-
-  const handleChange = (event: React.SyntheticEvent, newValue: string) => {
-    setValue(newValue)
-    setSearch('')
-  }
-
-  const handleSearch = () => {
-    setQueryParams(`${queryParams}&q=${search}`)
-  }
+  const { data: listTableBooking, mutate: mutate } = useSWR(`${API_URL}/tables`, fetcher)
 
   return (
     <Grid container spacing={6}>
       <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant='h5'>Quản lý bàn</Typography>
+        <Typography variant='h5'>Danh sách bàn billiard</Typography>
         <Button variant='outlined' onClick={handleOpen}>
           Tạo mới
         </Button>
       </Grid>
 
-      <Card sx={{ width: '100%', mt: '1rem' }}>
-        <TabContext value={value}>
-          <TabList
-            onChange={handleChange}
-            aria-label='account-settings tabs'
-            sx={{ paddingBottom: '1.5rem' }}
-            // borderBottom: theme => `1px solid ${theme.palette.divider}`
-          >
-            <Tab
-              value='all'
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <LockOpenOutline />
-                  <TabName>Tất cả</TabName>
-                </Box>
-              }
-            />
-
-            <Tab
-              value='booking'
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Lock />
-                  <TabName>Bàn đang đặt</TabName>
-                </Box>
-              }
-            />
-          </TabList>
-
-          <Box sx={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', paddingLeft: '0.5rem' }}>
-            <TextField
-              size='small'
-              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 4 } }}
-              onChange={e => setSearch(e.target.value)}
-              value={search}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position='start'>
-                    <Magnify fontSize='small' />
-                  </InputAdornment>
-                )
-              }}
-            />
-
-            <Button onClick={() => handleSearch()} variant='contained'>
-              Tìm kiếm
-            </Button>
-          </Box>
-
-          <TabPanel sx={{ p: 0 }} value='all'>
-            <TableList
-              items={listTable?.data?.data}
-              mutate={mutate}
-              mutateBooking={mutateBooking}
-              setQueryParams={setQueryParams}
-            />
-          </TabPanel>
-          <TabPanel sx={{ p: 0 }} value='booking'>
-            <BookingList
-              items={listTableBooking?.data?.data}
-              setQueryParams={setQueryParams}
-              mutate={mutateBooking}
-              mutateList={mutate}
-            />
-          </TabPanel>
-        </TabContext>
-      </Card>
-
+      <Grid item xs={12}>
+        <NewTableList items={listTableBooking?.data?.data} mutate={mutate} />
+      </Grid>
       <Modal
         open={open}
         onClose={handleClose}

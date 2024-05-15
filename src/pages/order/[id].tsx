@@ -126,11 +126,11 @@ const Detail = () => {
                       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                           <TextField
-                            autoFocus
                             fullWidth
                             disabled={!!orderDetail?.total_price}
                             id='customer_name'
-                            label='Tên khách hàng'
+                            label={orderDetail?.customer_name ? '' : 'Tên khách hàng'}
+                            value={orderDetail?.customer_name}
                             sx={{ marginBottom: 4 }}
                             {...register('customer_name', { required: true })}
                           />

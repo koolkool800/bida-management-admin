@@ -6,6 +6,7 @@ type SaveLocalStorageType = {
 }
 
 export const USER = 'user'
+export const MODE = 'dark'
 
 export const localHandler = {
   getLocal: (key: string) => {
