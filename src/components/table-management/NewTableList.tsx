@@ -109,9 +109,13 @@ const NewTableList = ({ items, mutate }: Props) => {
                     gap: '12px'
                   }}
                 >
-                  <Button onClick={() => handleOpenCheckinModal(item.id)}>
-                    {checkTableAvailable(item.id) ? <Eye /> : <CheckOutline />}
-                  </Button>
+                  <Box sx={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Button></Button>
+                    <Button onClick={() => handleOpenCheckinModal(item.id)}>
+                      {checkTableAvailable(item.id) ? <Eye /> : <CheckOutline />}
+                    </Button>
+                  </Box>
+
                   <Box
                     sx={{
                       border: localHandler.getLocal(MODE) === 'light' ? '1px solid black' : '1px solid white',

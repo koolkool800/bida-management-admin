@@ -1,4 +1,16 @@
-import { Box, Button, Grid, Modal, Paper, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Checkbox,
+  Grid,
+  Modal,
+  Paper,
+  TextField,
+  Typography
+} from '@mui/material'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 
@@ -6,9 +18,13 @@ import Account from 'mdi-material-ui/Account'
 import CalendarArrowRight from 'mdi-material-ui/CalendarArrowRight'
 import CalendarArrowLeft from 'mdi-material-ui/CalendarArrowLeft'
 import CreditCardOutline from 'mdi-material-ui/CreditCardOutline'
+import Plus from 'mdi-material-ui/Plus'
+
+import CloudPrint from 'mdi-material-ui/CloudPrint'
+
 import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import { formatCurrency } from 'src/utils/price'
-import { OrderDetail, menuItems } from 'src/types/menu'
+import { OrderDetail, Product, menuItems } from 'src/types/menu'
 import useSWR from 'swr'
 import { API_URL } from 'src/constants/environment'
 import { fetcher } from 'src/libs/axios'
@@ -20,15 +36,31 @@ import { getHourMinute } from 'src/utils/date'
 import { useForm } from 'react-hook-form'
 import { orderService } from 'src/services/order'
 import toast from 'react-hot-toast'
-
+import { saveAs } from 'file-saver'
 type FormValues = {
   customer_name: string
+  customer_phone: string
+}
+
+type FormValuesMenuUpdateForOrder = {
+  quantity: number
+  product_id: number
+  price: number
 }
 
 const Detail = () => {
   const router = useRouter()
   const { handleSubmit, register, watch } = useForm<FormValues>()
+  const {
+    register: registerMenu,
+    handleSubmit: handleSubmitMenu,
+    watch: watchMenu
+  } = useForm<FormValuesMenuUpdateForOrder>()
+
   const [isOpenAddProduct, setIsOpenAddProduct] = useState(false)
+  const [menuIds, setMenuIds] = useState<number[]>([])
+  const [quantityByMenuIds, setQuantityByMenuIds] = useState<{ quantity: number; id: number }[]>([])
+
   const handleOpenAddProduct = () => setIsOpenAddProduct(true)
   const handleCloseAddProduct = () => setIsOpenAddProduct(false)
 
@@ -36,15 +68,56 @@ const Detail = () => {
 
   const { data: orderData, mutate } = useSWR(id ? `${API_URL}/orders/${id}` : null, fetcher)
   const { data: orderDataPrice, mutate: loadTotalPrice } = useSWR(`${API_URL}/orders/${id}/total-price`, fetcher)
+  const { data: listProduct, mutate: mutateProduct } = useSWR(`${API_URL}/products`, fetcher)
   const orderDetail = (orderData?.data as Order) || {}
   const totalPrice = orderDataPrice?.data.total_price || 0
   const user = getUserLocal()
+
+  const handleCheck = (id: number) => {
+    if (menuIds.includes(id)) {
+      const newIds = menuIds.filter(item => item !== id)
+      setMenuIds(newIds)
+    } else {
+      setMenuIds([...menuIds, id])
+    }
+  }
+
+  const renderQuantity = (menuId: number) => {
+    const quantity = quantityByMenuIds.find(item => item.id === menuId)
+    return quantity?.quantity || 1
+  }
+
+  const handleSetQuantity = (menuId: number, quantity: number) => {
+    if (quantityByMenuIds.length === 0) {
+      setQuantityByMenuIds([{ id: menuId, quantity }])
+    } else {
+      const isExist = quantityByMenuIds.find(item => item.id === menuId)
+      let items = []
+      if (isExist) {
+        const newQuantityByMenuIds = quantityByMenuIds.map(item => {
+          if (item.id === menuId) {
+            return { ...item, quantity: quantity + 1 }
+          } else {
+            return {
+              ...item
+            }
+          }
+        })
+        items = newQuantityByMenuIds
+      } else {
+        items = [...quantityByMenuIds, { id: menuId, quantity }]
+      }
+
+      setQuantityByMenuIds(items)
+    }
+  }
 
   const onSubmit = async (data: FormValues) => {
     try {
       const response = await orderService.checkOut({
         order_id: Number(id),
-        customer_name: data.customer_name
+        customer_name: data.customer_name,
+        customer_phone: data.customer_phone
       })
 
       if (response?.message === 'Successfully') {
@@ -54,6 +127,54 @@ const Detail = () => {
 
     mutate()
     loadTotalPrice()
+  }
+
+  const onSubmitMenu = async (data: FormValuesMenuUpdateForOrder) => {
+    try {
+      const products = listProduct?.data?.data as Product[]
+      const productsBody = quantityByMenuIds.map(item => {
+        const product = products.find(product => product.id === item.id)
+        return {
+          price: product?.price || 0,
+          product_id: item.id,
+          quantity: item.quantity
+        }
+      })
+
+      if (productsBody.length === 0) {
+        toast.error('Vui lòng chọn món')
+        return
+      }
+
+      await orderService.updateProduct({
+        order_id: Number(id),
+        products: productsBody
+      })
+
+      toast.success('Thêm thành công', {
+        position: 'top-right'
+      })
+      mutate()
+    } catch (error) {}
+
+    setQuantityByMenuIds([])
+  }
+
+  const handleDownloadBill = async () => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/orders/${id}/download`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/pdf'
+        }
+      })
+
+      const blob = await response.blob()
+      saveAs(blob, 'invoice.pdf')
+      toast.success('Tải hóa đơn thành công', { position: 'top-right' })
+    } catch (error) {
+      toast.error('Tải hóa đơn thất bại', { position: 'top-right' })
+    }
   }
 
   return (
@@ -66,12 +187,13 @@ const Detail = () => {
           <Typography variant='h3'>Hóa đơn chi tiết</Typography>
         </Box>
         <Button
-          disabled={!!orderDetail?.total_price}
+          disabled={!orderDetail?.total_price}
           sx={{ height: '50px' }}
           variant='outlined'
-          onClick={() => handleOpenAddProduct()}
+          onClick={() => handleDownloadBill()}
         >
-          Thêm món cho bàn
+          <CloudPrint />
+          <Typography sx={{ ml: '12px' }}>In hóa đơn</Typography>
         </Button>
       </Grid>
       <Grid item xs={12}>
@@ -136,6 +258,18 @@ const Detail = () => {
                           />
                         </Box>
 
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                          <TextField
+                            fullWidth
+                            disabled={!!orderDetail?.total_price}
+                            id='customer_phone'
+                            label={orderDetail?.customer_phone ? '' : 'SDT'}
+                            value={orderDetail?.customer_phone}
+                            sx={{ marginBottom: 4 }}
+                            {...register('customer_phone', { required: true, pattern: /^[0-9\b]+$/ })}
+                          />
+                        </Box>
+
                         <Button disabled={!!orderDetail?.total_price} type='submit' variant='contained'>
                           Thanh toán
                         </Button>
@@ -153,7 +287,7 @@ const Detail = () => {
             {orderDetail?.order_detail?.length === 0 ? (
               <Typography variant='h6'>Chưa có món nào được đặt</Typography>
             ) : (
-              <Paper>
+              <Paper sx={{ maxHeight: '1000px', overflow: 'scroll' }}>
                 <Box>
                   {orderDetail?.order_detail?.map((item, idx) => {
                     return (
@@ -189,6 +323,62 @@ const Detail = () => {
           </Grid>
         </Grid>
       </Grid>
+      <form onSubmit={handleSubmitMenu(onSubmitMenu)}>
+        <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between', marginTop: '50px' }}>
+          <Typography variant='h5'>Thêm món</Typography>
+          <Button disabled={!!orderDetail?.total_price} sx={{ height: '50px' }} variant='outlined' type='submit'>
+            Thêm món cho bàn
+          </Button>
+        </Grid>
+        <Grid container spacing={6} mt={4}>
+          {(listProduct?.data?.data as Product[])?.map((item, index) => (
+            <Grid item xs={12} sm={6} md={4}>
+              <Card sx={{ display: 'flex', width: '100%' }}>
+                <CardMedia
+                  component='img'
+                  sx={{ height: '200px', width: '50%', objectFit: 'cover' }}
+                  image={
+                    item?.image_url?.includes('localhost:8000')
+                      ? item?.image_url
+                      : `http://localhost:8000/${item?.image_url}`
+                  }
+                  alt='Live from space album cover'
+                />
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <CardContent sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                    <Typography component='div' variant='h5'>
+                      {item.name}
+                    </Typography>
+                    <Typography variant='h6' color='text.secondary' component='div'>
+                      {formatCurrency(item.price)}
+                    </Typography>
+                  </CardContent>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <Checkbox checked={menuIds.includes(item.id)} onClick={() => handleCheck(item.id)} />
+                    {menuIds.includes(item.id) && (
+                      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Typography variant='h6'>
+                          {quantityByMenuIds.find(menu => menu.id === item.id)?.quantity || 0}
+                        </Typography>
+                        <Button onClick={() => handleSetQuantity(item.id, renderQuantity(item.id))}>
+                          <Plus />
+                        </Button>
+                      </Box>
+                    )}
+                  </Box>
+                </Box>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </form>
 
       <Modal
         open={isOpenAddProduct}

@@ -14,6 +14,6 @@ export type Order = {
   table_name: string
   setting_table_type: string
   customer_name?: string
-  customer_phonenumber?: string
+  customer_phone?: string
   order_detail: OrderDetail[]
 }

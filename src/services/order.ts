@@ -41,7 +41,11 @@ export const orderService = {
       })
     }
   },
-  checkOut: async <T>(data: { order_id: number; customer_name?: string }): Promise<Response<T> | undefined> => {
+  checkOut: async <T>(data: {
+    order_id: number
+    customer_name?: string
+    customer_phone?: string
+  }): Promise<Response<T> | undefined> => {
     try {
       const response = await axiosInstance().post('orders/check-out', data)
       return response.data
@@ -64,6 +68,20 @@ export const orderService = {
   getTotalPrice: async <T>(data: { order_id: number }): Promise<Response<T> | undefined> => {
     try {
       const response = await axiosInstance().get(`orders/${data.order_id}/total-price`)
+      return response.data
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message, {
+        position: 'top-right'
+      })
+    }
+  },
+  printBill: async <T>(data: { order_id: number }): Promise<Response<T> | undefined> => {
+    try {
+      const response = await axiosInstance().get(`orders/${data.order_id}/download`, {
+        headers: {
+          'Content-Type': 'application/pdf'
+        }
+      })
       return response.data
     } catch (error: any) {
       toast.error(error?.response?.data?.message, {
