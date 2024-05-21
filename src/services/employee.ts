@@ -5,7 +5,13 @@ import { axiosInstance } from 'src/libs/axios'
 import { Response } from 'src/types/response'
 
 export const employeeeService = {
-  create: async <T>(data: { name: string; password: string; user_name: string }): Promise<Response<T> | undefined> => {
+  create: async <T>(data: {
+    name: string
+    password: string
+    user_name: string
+    address: string
+    phone_number: string
+  }): Promise<Response<T> | undefined> => {
     try {
       const response = await axiosInstance().post('employees', data)
       return response.data

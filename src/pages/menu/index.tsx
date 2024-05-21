@@ -19,6 +19,7 @@ import Grid from '@mui/material/Grid'
 import { Magnify } from 'mdi-material-ui'
 import { useState } from 'react'
 import CreateMenu from 'src/components/menu/Create'
+import NhapKho from 'src/components/menu/NhapKho'
 import { TableList } from 'src/components/menu/TableList'
 import { modalStyle } from 'src/configs/modal.config'
 import { API_URL } from 'src/constants/environment'
@@ -29,8 +30,14 @@ import useSWR from 'swr'
 
 const MenuPage = () => {
   const [open, setOpen] = useState(false)
+  const [openImport, setOpenImport] = useState(false)
+
   const handleOpen = () => setOpen(true)
+  const handleOpenImport = () => setOpenImport(true)
+
   const handleClose = () => setOpen(false)
+  const handleCloseImport = () => setOpenImport(false)
+
   const [search, setSearch] = useState('')
   const [queryParams, setQueryParams] = useState('')
   const [type, setType] = useState('')
@@ -51,9 +58,15 @@ const MenuPage = () => {
     <Grid container spacing={6}>
       <Grid item xs={12} style={{ display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant='h5'>Quản lý thực đơn</Typography>
-        <Button variant='outlined' onClick={handleOpen}>
-          Tạo mới
-        </Button>
+
+        <Box sx={{ display: 'flex', gap: '10px' }}>
+          <Button variant='outlined' onClick={handleOpen}>
+            Tạo mới
+          </Button>
+          <Button variant='contained' onClick={handleOpenImport}>
+            Nhập kho
+          </Button>
+        </Box>
       </Grid>
 
       <Box
@@ -150,6 +163,15 @@ const MenuPage = () => {
         aria-describedby='modal-modal-description'
       >
         <CreateMenu mutate={mutate} style={modalStyle} handleClose={handleClose} />
+      </Modal>
+
+      <Modal
+        open={openImport}
+        onClose={handleCloseImport}
+        aria-labelledby='modal-modal-title'
+        aria-describedby='modal-modal-description'
+      >
+        <NhapKho mutate={mutate} style={modalStyle} handleClose={handleCloseImport} />
       </Modal>
     </Grid>
   )

@@ -38,6 +38,7 @@ type FormValues = {
   name: string
   user_name: string
   password: string
+  address: string
 }
 
 const CreateEmployee = ({
@@ -99,12 +100,35 @@ const CreateEmployee = ({
                 type='text'
                 label='Tài khoản'
                 placeholder='carterleonard'
-                helperText='You can use letters, numbers & periods'
                 {...register('user_name', {
                   required: true
                 })}
               />
             </Grid>
+
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                type='text'
+                label='Địa chỉ'
+                placeholder='carterleonard'
+                {...register('address', {
+                  required: true
+                })}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                type='text'
+                label='SDT'
+                placeholder='carterleonard'
+                {...register('user_name', {
+                  required: true
+                })}
+              />
+            </Grid>
+
             <Grid item xs={12}>
               <FormControl fullWidth>
                 <InputLabel htmlFor='form-layouts-basic-password'>Password</InputLabel>

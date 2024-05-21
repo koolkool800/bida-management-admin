@@ -22,6 +22,17 @@ export const menuService = {
       })
     }
   },
+  import: async <T>(data: { quantity: number; product_id: number }[]): Promise<Response<T> | undefined> => {
+    try {
+      const response = await axiosInstance().post('products/import', data)
+      return response.data
+    } catch (error: any) {
+      console.error(error)
+      toast.error(error?.response?.data?.message, {
+        position: 'top-right'
+      })
+    }
+  },
 
   getList: async <T>(): Promise<Response<T> | null> => {
     try {
