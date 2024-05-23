@@ -38,13 +38,15 @@ interface Column {
 const columns: readonly Column[] = [
   { id: 'code', label: 'code', minWidth: 100 },
   { id: 'name', label: 'Tên', minWidth: 170 },
-  { id: 'avatar', label: 'Ảnh đại diện', minWidth: 170 },
+  { id: 'avatar', label: 'Ảnh đại diện', minWidth: 100 },
   {
     id: 'email',
     label: 'Email',
     minWidth: 170,
     align: 'right'
-  }
+  },
+  { id: 'address', label: 'Địa chỉ', minWidth: 170, align: 'right' },
+  { id: 'phone', label: 'SDT', minWidth: 170, align: 'right' }
 ]
 
 interface Data {
@@ -52,11 +54,13 @@ interface Data {
   name: string
   avatar: string
   email: string
+  address: string
+  phone: string
   // actions: React.ReactNode
 }
 
-function createData(code: string, avatar: string, name: string, email: string): Data {
-  return { code, name, avatar, email }
+function createData(code: string, avatar: string, name: string, email: string, address: string, phone: string): Data {
+  return { code, name, avatar, email, address, phone }
 }
 
 type Props = {
@@ -120,7 +124,7 @@ export const TableList = ({ items, mutate }: Props) => {
   }
 
   const rows: Data[] = items?.map(item => {
-    return createData(item.id.toString(), '/images/avatars/1.png', item.name, item.user_name)
+    return createData(item.id.toString(), '/images/avatars/1.png', item.name, item.user_name, item.address, item.phone)
   })
 
   return (

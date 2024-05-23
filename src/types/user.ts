@@ -10,4 +10,6 @@ export type Employee = {
   id: number
   name: string
   user_name: string
+  phone: string
+  address: string
 }

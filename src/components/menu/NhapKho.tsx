@@ -57,15 +57,17 @@ const NhapKho = ({
   } = useForm<FormValues>()
   const { data: listProduct } = useSWR(`${API_URL}/products`, fetcher)
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (formData: FormValues) => {
     try {
-      const body = [
-        {
-          quantity: data.quantity,
-          product_id: data.product_id
-        }
-      ]
-      await menuService.import(body)
+      const data = {
+        products: [
+          {
+            quantity: formData.quantity,
+            product_id: formData.product_id
+          }
+        ]
+      }
+      await menuService.import(data)
 
       toast.success('Create setting successfully', {
         position: 'top-right'

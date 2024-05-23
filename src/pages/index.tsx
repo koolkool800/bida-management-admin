@@ -32,29 +32,6 @@ import Trophy from 'src/views/dashboard/Trophy'
 import BestSeller from 'src/components/dashboard/BestSeller'
 import StatisticsCard from 'src/components/dashboard/StatisticsCard'
 
-const topTables = [
-  {
-    name: 'Bàn 1',
-    revenue: '1.2M'
-  },
-  {
-    name: 'Bàn 2',
-    revenue: '1.2M'
-  },
-  {
-    name: 'Bàn 3',
-    revenue: '1.2M'
-  },
-  {
-    name: 'Bàn 4',
-    revenue: '1.2M'
-  },
-  {
-    name: 'Bàn 5',
-    revenue: '1.2M'
-  }
-]
-
 const Dashboard = () => {
   const { data: statisticData, mutate } = useSWR(`${API_URL}/statistical`, fetcher)
   const statistic = statisticData?.data as StatisticDashboard

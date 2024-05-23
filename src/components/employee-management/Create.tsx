@@ -39,6 +39,7 @@ type FormValues = {
   user_name: string
   password: string
   address: string
+  phone: string
 }
 
 const CreateEmployee = ({
@@ -123,7 +124,7 @@ const CreateEmployee = ({
                 type='text'
                 label='SDT'
                 placeholder='carterleonard'
-                {...register('user_name', {
+                {...register('phone', {
                   required: true
                 })}
               />

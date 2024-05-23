@@ -1,0 +1,7 @@
+.custom-tooltip {
+  background: #000; /* Background color for the tooltip */
+  color: #fff; /* Text color for the tooltip */
+  padding: 5px;
+  border-radius: 5px;
+  text-align: center;
+}

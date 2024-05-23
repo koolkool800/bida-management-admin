@@ -33,6 +33,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { MODE, saveLocalStorage } from 'src/utils/localStorage'
 
+import { LocalizationProvider } from '@mui/x-date-pickers'
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+
 // ** Extend App Props with Emotion
 type ExtendedAppProps = AppProps & {
   Component: NextPage
@@ -70,23 +73,25 @@ const App = (props: ExtendedAppProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       <CacheProvider value={emotionCache}>
-        <Head>
-          <title>{`${themeConfig.templateName} - Admin`}</title>
-          <meta
-            name='description'
-            content={`${themeConfig.templateName} – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
-          />
-          <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
-          <meta name='viewport' content='initial-scale=1, width=device-width' />
-        </Head>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Head>
+            <title>{`${themeConfig.templateName} - Admin`}</title>
+            <meta
+              name='description'
+              content={`${themeConfig.templateName} – is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.`}
+            />
+            <meta name='keywords' content='Material Design, MUI, Admin Template, React Admin Template' />
+            <meta name='viewport' content='initial-scale=1, width=device-width' />
+          </Head>
 
-        <SettingsProvider>
-          <SettingsConsumer>
-            {({ settings }) => {
-              return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
-            }}
-          </SettingsConsumer>
-        </SettingsProvider>
+          <SettingsProvider>
+            <SettingsConsumer>
+              {({ settings }) => {
+                return <ThemeComponent settings={settings}>{getLayout(<Component {...pageProps} />)}</ThemeComponent>
+              }}
+            </SettingsConsumer>
+          </SettingsProvider>
+        </LocalizationProvider>
       </CacheProvider>
     </QueryClientProvider>
   )

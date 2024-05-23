@@ -22,6 +22,7 @@ import TabSecurity from 'src/views/account-settings/TabSecurity'
 
 // ** Third Party Styles Imports
 import 'react-datepicker/dist/react-datepicker.css'
+import Dashboard from 'src/pages'
 
 const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
   [theme.breakpoints.down('md')]: {
@@ -86,8 +87,9 @@ const AccountSettings = () => {
           />
         </TabList>
 
-        <TabPanel sx={{ p: 0 }} value='account'>
-          <TabAccount />
+        <TabPanel sx={{ pb: 12 }} value='account'>
+          {/* <TabAccount /> */}
+          <Dashboard />
         </TabPanel>
         <TabPanel sx={{ p: 0 }} value='security'>
           <TabSecurity />

@@ -10,7 +10,7 @@ export const employeeeService = {
     password: string
     user_name: string
     address: string
-    phone_number: string
+    phone: string
   }): Promise<Response<T> | undefined> => {
     try {
       const response = await axiosInstance().post('employees', data)

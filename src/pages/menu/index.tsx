@@ -17,6 +17,7 @@ import {
 } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import { Magnify } from 'mdi-material-ui'
+import { useRouter } from 'next/router'
 import { useState } from 'react'
 import CreateMenu from 'src/components/menu/Create'
 import NhapKho from 'src/components/menu/NhapKho'
@@ -24,13 +25,14 @@ import { TableList } from 'src/components/menu/TableList'
 import { modalStyle } from 'src/configs/modal.config'
 import { API_URL } from 'src/constants/environment'
 import { axiosInstance, fetcher } from 'src/libs/axios'
-import { MenuType, Product, menuItems } from 'src/types/menu'
+import { MenuType, Product } from 'src/types/menu'
 import { formatCurrency } from 'src/utils/price'
 import useSWR from 'swr'
 
 const MenuPage = () => {
   const [open, setOpen] = useState(false)
   const [openImport, setOpenImport] = useState(false)
+  const router = useRouter()
 
   const handleOpen = () => setOpen(true)
   const handleOpenImport = () => setOpenImport(true)
@@ -52,6 +54,10 @@ const MenuPage = () => {
   const handleSelectType = (type: string) => {
     setType(type)
     setQueryParams(queryParams ? `${queryParams}&type=${type}` : `type=${type}`)
+  }
+
+  const goDetail = (id: number) => {
+    router.push(`/menu/${id}`)
   }
 
   return (
@@ -121,8 +127,8 @@ const MenuPage = () => {
 
       <Grid container spacing={6} mt={4}>
         {(listProduct?.data?.data as Product[])?.map((item, index) => (
-          <Grid item xs={12} sm={6} md={4}>
-            <Card sx={{ display: 'flex', width: '100%' }}>
+          <Grid item xs={12} sm={6} md={4} sx={{ cursor: 'pointer' }}>
+            <Card sx={{ display: 'flex', width: '100%' }} onClick={() => goDetail(item.id)}>
               <CardMedia
                 component='img'
                 sx={{ height: '200px', width: '50%', objectFit: 'cover' }}
@@ -148,6 +154,9 @@ const MenuPage = () => {
                   </Typography>
                   <Typography variant='h6' color='text.secondary' component='div'>
                     {formatCurrency(item.price)}
+                  </Typography>
+                  <Typography variant='h6' color='text.secondary' component='div'>
+                    SL: {item.current_quantity}
                   </Typography>
                 </CardContent>
               </Box>

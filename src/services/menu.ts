@@ -22,9 +22,9 @@ export const menuService = {
       })
     }
   },
-  import: async <T>(data: { quantity: number; product_id: number }[]): Promise<Response<T> | undefined> => {
+  import: async <T>(data: any): Promise<Response<T> | undefined> => {
     try {
-      const response = await axiosInstance().post('products/import', data)
+      const response = await axiosInstance().post('products/imports', data)
       return response.data
     } catch (error: any) {
       console.error(error)
