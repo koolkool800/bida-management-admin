@@ -31,6 +31,7 @@ import RevenueChart from 'src/components/dashboard/RevenueChart'
 import Trophy from 'src/views/dashboard/Trophy'
 import BestSeller from 'src/components/dashboard/BestSeller'
 import StatisticsCard from 'src/components/dashboard/StatisticsCard'
+import HomeDashboardRevenue from 'src/components/dashboard/HomeDashboard'
 
 const Dashboard = () => {
   const { data: statisticData, mutate } = useSWR(`${API_URL}/statistical`, fetcher)
@@ -94,7 +95,8 @@ const Dashboard = () => {
           </Paper>
         </Grid> */}
         <Grid item xs={12} md={8}>
-          <RevenueChart />
+          <HomeDashboardRevenue />
+          {/* <RevenueChart /> */}
         </Grid>
       </Grid>
     </Grid>
