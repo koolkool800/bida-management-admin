@@ -127,16 +127,20 @@ const NewTableList = ({ items, mutate }: Props) => {
                       flexDirection: 'column',
                       alignItems: 'center'
                     }}
-                    onClick={() => handleNavigate(item.id)}
+                    // onClick={() => handleNavigate(item.id)}
                   >
                     <BilliardsRack />
                   </Box>
-                  <Box onClick={() => handleNavigate(item.id)}>
+                  <Box
+                  // onClick={() => handleNavigate(item.id)}
+                  >
                     <Typography variant='body1'>
                       {item.name} {item.type}
                     </Typography>
                   </Box>
-                  <Box onClick={() => handleNavigate(item.id)}>
+                  <Box
+                  // onClick={() => handleNavigate(item.id)}
+                  >
                     <Typography variant='body1'>{item.is_available ? 'Trống' : 'Có người'}</Typography>
                   </Box>
                 </Box>

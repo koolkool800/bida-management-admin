@@ -24,7 +24,7 @@ import CloudPrint from 'mdi-material-ui/CloudPrint'
 
 import CurrencyUsd from 'mdi-material-ui/CurrencyUsd'
 import { formatCurrency } from 'src/utils/price'
-import { OrderDetail, Product, menuItems } from 'src/types/menu'
+import { OrderDetail, Product } from 'src/types/menu'
 import useSWR from 'swr'
 import { API_URL } from 'src/constants/environment'
 import { fetcher } from 'src/libs/axios'
@@ -32,7 +32,7 @@ import { getUserLocal } from 'src/utils/localStorage'
 import { Order } from 'src/types/order'
 import UpdateOrder from 'src/components/table-management/UpdateOrder'
 import { modalStyle } from 'src/configs/modal.config'
-import { getHourMinute } from 'src/utils/date'
+import { getHourMinute, getTimeZoneVietNam } from 'src/utils/date'
 import { useForm } from 'react-hook-form'
 import { orderService } from 'src/services/order'
 import toast from 'react-hot-toast'
@@ -214,11 +214,11 @@ const Detail = () => {
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <CalendarArrowRight />
-                        <Typography variant='h6'>Vào lúc {orderDetail?.start_time?.toLocaleString()}</Typography>
+                        <Typography variant='h6'>Vào lúc {getTimeZoneVietNam(orderDetail?.start_time)}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <CalendarArrowLeft />
-                        <Typography variant='h6'>Ra lúc {orderDetail?.end_time?.toLocaleString()}</Typography>
+                        <Typography variant='h6'>Ra lúc {getTimeZoneVietNam(orderDetail?.end_time as Date)}</Typography>
                       </Box>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                         <CreditCardOutline />
