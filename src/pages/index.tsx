@@ -92,7 +92,7 @@ const Dashboard = () => {
             label={
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 {/* <LockOpenOutline /> */}
-                <TabName>Thực đơn</TabName>
+                <TabName>Theo ngày</TabName>
               </Box>
             }
           />
