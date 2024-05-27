@@ -136,7 +136,7 @@ const RevenueChart = ({ items }: { items: ProductStatistic[] }) => {
     },
     yaxis: {
       title: {
-        text: 'Quantity',
+        text: 'Số lượng',
         style: {
           color: 'white' // Green color for y-axis title
         }
@@ -166,11 +166,11 @@ const RevenueChart = ({ items }: { items: ProductStatistic[] }) => {
   }
   const series = [
     {
-      name: 'Import Quantity',
+      name: 'Nhập số lượng',
       data: importQuantities
     },
     {
-      name: 'Export Quantity',
+      name: 'Xuất số lượng',
       data: exportQuantities
     }
   ]

@@ -5,6 +5,7 @@ import {
   Card,
   CardContent,
   CardMedia,
+  Checkbox,
   FormControl,
   InputAdornment,
   InputLabel,
@@ -28,6 +29,10 @@ import { axiosInstance, fetcher } from 'src/libs/axios'
 import { MenuType, Product } from 'src/types/menu'
 import { formatCurrency } from 'src/utils/price'
 import useSWR from 'swr'
+import Plus from 'mdi-material-ui/Plus'
+import Delete from 'mdi-material-ui/Delete'
+import { menuService } from 'src/services/menu'
+import toast from 'react-hot-toast'
 
 const MenuPage = () => {
   const [open, setOpen] = useState(false)
@@ -58,6 +63,18 @@ const MenuPage = () => {
 
   const goDetail = (id: number) => {
     router.push(`/menu/${id}`)
+  }
+
+  const handleDelete = (id: number) => {
+    menuService
+      .delete(id)
+      .then(() => {
+        toast.success('Xóa thành công')
+        mutate()
+      })
+      .catch(() => {
+        toast.error('Xóa thất bại')
+      })
   }
 
   return (
@@ -127,28 +144,30 @@ const MenuPage = () => {
 
       <Grid container spacing={6} mt={4}>
         {(listProduct?.data?.data as Product[])?.map((item, index) => (
-          <Grid item xs={12} sm={6} md={4} sx={{ cursor: 'pointer' }}>
-            <Card sx={{ display: 'flex', width: '100%' }} onClick={() => goDetail(item.id)}>
+          <Grid item xs={12} sm={6} md={4}>
+            <Card sx={{ display: 'flex', width: '100%' }}>
               <CardMedia
                 component='img'
-                sx={{ height: '200px', width: '50%', objectFit: 'cover' }}
+                sx={{ height: '200px', width: '50%', objectFit: 'cover', cursor: 'pointer' }}
                 image={
                   item?.image_url?.includes('localhost:8000')
                     ? item?.image_url
                     : `http://localhost:8000/${item?.image_url}`
                 }
                 alt='Live from space album cover'
+                onClick={() => goDetail(item.id)}
               />
               <Box
                 sx={{
                   display: 'flex',
-                  flexDirection: 'column',
-                  width: '50%',
-                  justifyContent: 'center',
-                  alignItems: 'center'
+                  justifyContent: 'space-between',
+                  width: '70%'
                 }}
               >
-                <CardContent sx={{}}>
+                <CardContent
+                  sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', cursor: 'pointer' }}
+                  onClick={() => goDetail(item.id)}
+                >
                   <Typography component='div' variant='h5'>
                     {item.name}
                   </Typography>
@@ -159,6 +178,11 @@ const MenuPage = () => {
                     SL: {item.current_quantity}
                   </Typography>
                 </CardContent>
+                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <Button onClick={() => handleDelete(item.id)}>
+                    <Delete />
+                  </Button>
+                </Box>
               </Box>
             </Card>
           </Grid>

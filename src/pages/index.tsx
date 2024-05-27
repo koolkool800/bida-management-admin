@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography'
 // ** Demo Components Imports
 import CardSupport from 'src/views/cards/CardSupport'
 import CardStatistic from 'src/components/dashboard/CardStatistic'
-import { Box, Paper } from '@mui/material'
+import { Box, Paper, styled } from '@mui/material'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
@@ -32,74 +32,100 @@ import Trophy from 'src/views/dashboard/Trophy'
 import BestSeller from 'src/components/dashboard/BestSeller'
 import StatisticsCard from 'src/components/dashboard/StatisticsCard'
 import HomeDashboardRevenue from 'src/components/dashboard/HomeDashboard'
+import MuiTab, { TabProps } from '@mui/material/Tab'
+import TabList from '@mui/lab/TabList'
+import TabPanel from '@mui/lab/TabPanel'
+import TabContext from '@mui/lab/TabContext'
+import { SyntheticEvent, useState } from 'react'
+import AccountOutline from 'mdi-material-ui/AccountOutline'
+import LockOpenOutline from 'mdi-material-ui/LockOpenOutline'
+import InformationOutline from 'mdi-material-ui/InformationOutline'
+import TabSecurity from 'src/views/account-settings/TabSecurity'
+import FootChart from 'src/components/dashboard/FoodChart'
+
+const Tab = styled(MuiTab)<TabProps>(({ theme }) => ({
+  [theme.breakpoints.down('md')]: {
+    minWidth: 100
+  },
+  [theme.breakpoints.down('sm')]: {
+    minWidth: 67
+  }
+}))
+
+const TabName = styled('span')(({ theme }) => ({
+  lineHeight: 1.71,
+  fontSize: '0.875rem',
+  marginLeft: theme.spacing(2.4),
+  [theme.breakpoints.down('md')]: {
+    display: 'none'
+  }
+}))
 
 const Dashboard = () => {
   const { data: statisticData, mutate } = useSWR(`${API_URL}/statistical`, fetcher)
   const statistic = statisticData?.data as StatisticDashboard
+  const [value, setValue] = useState<string>('account')
+
+  const handleChange = (event: SyntheticEvent, newValue: string) => {
+    setValue(newValue)
+  }
 
   return (
-    <Grid container spacing={2} gap={12}>
-      {/* <Grid container spacing={6}>
-        {itemsStatistic.map((item, index) => (
-          <Grid item xs={12} sm={6} md={12 / 5}>
-            <CardStatistic icon={item.icon} title={item.title} value={item.value} />
-          </Grid>
-        ))}
-      </Grid> */}
-      <Grid container spacing={6}>
-        <Grid item xs={12} md={4}>
-          <BestSeller item={statistic?.top_revenue_table?.[0]} />
-        </Grid>
-        <Grid item xs={12} md={8}>
-          <StatisticsCard />
-        </Grid>
-      </Grid>
-      <Grid container spacing={2}>
-        <Grid item xs={12} md={4}>
-          <RecentOrders items={statistic?.recent_invoice} />
-        </Grid>
-        {/* <Grid item xs={6} md={8}>
-          <Typography variant='h5' sx={{ marginBottom: 6 }}>
-            Top bàn doanh thu cao nhất
-          </Typography>
+    <Card>
+      <TabContext value={value}>
+        <TabList
+          onChange={handleChange}
+          aria-label='account-settings tabs'
+          sx={{ borderBottom: theme => `1px solid ${theme.palette.divider}` }}
+        >
+          <Tab
+            value='account'
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                {/* <AccountOutline /> */}
+                <TabName>Tất cả</TabName>
+              </Box>
+            }
+          />
+          <Tab
+            value='security'
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                {/* <LockOpenOutline /> */}
+                <TabName>Thực đơn</TabName>
+              </Box>
+            }
+          />
+        </TabList>
 
-          <Paper>
-            <Grid flexDirection={'column'} container gap={8}>
-              {topTables.map((table, index) => (
-                <Card sx={{ display: 'flex', padding: '10px' }}>
-                  <CardMedia
-                    component='img'
-                    sx={{ width: 151 }}
-                    image='https://scontent.fsgn8-4.fna.fbcdn.net/v/t1.15752-9/438270987_6858749857560668_8307698790179701267_n.png?_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=C0bzvp88GdoQ7kNvgHO4eyX&_nc_ht=scontent.fsgn8-4.fna&oh=03_Q7cD1QHdBre8BoS-eyLlY1i2Im-AuRLO3ThD-cOGlqUtret2UQ&oe=6662AEA2'
-                    alt='Live from space album cover'
-                  />
-                  <Box
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '0 20px'
-                    }}
-                  >
-                    <Typography component='div' variant='h5'>
-                      {table.name}
-                    </Typography>
-                    <Typography variant='h5' color='text.secondary' component='div'>
-                      {table.revenue}
-                    </Typography>
-                  </Box>
-                </Card>
-              ))}
+        <TabPanel sx={{ pb: 12 }} value='account'>
+          {/* <TabAccount /> */}
+          <Grid container spacing={2} gap={12}>
+            <Grid container spacing={6}>
+              <Grid item xs={12} md={4}>
+                <BestSeller item={statistic?.top_revenue_table?.[0]} />
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <StatisticsCard />
+              </Grid>
             </Grid>
-          </Paper>
-        </Grid> */}
-        <Grid item xs={12} md={8}>
-          <HomeDashboardRevenue />
-          {/* <RevenueChart /> */}
-        </Grid>
-      </Grid>
-    </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={12} md={4}>
+                <RecentOrders items={statistic?.recent_invoice} />
+              </Grid>
+
+              <Grid item xs={12} md={8}>
+                <HomeDashboardRevenue />
+              </Grid>
+            </Grid>
+          </Grid>
+        </TabPanel>
+        <TabPanel sx={{ p: '20px' }} value='security'>
+          <Grid container spacing={2} gap={12}></Grid>
+          <FootChart />
+        </TabPanel>
+      </TabContext>
+    </Card>
   )
 }
 
